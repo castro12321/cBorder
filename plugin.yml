@@ -1,0 +1,10 @@
+name: cBorder
+main: castro.cBorder.Plugin
+version: 1.0.0
+load: STARTUP
+depend: [Base_cPlugin, Multiverse-Core]
+commands:
+  cborder:
+    description: Main command
+    usage: /cb <parameters>
+    aliases: [cb]

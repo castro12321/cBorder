@@ -1,0 +1,8 @@
+# Disable protection against crashing and bugging at last chunks. DEBUG ONLY
+protection: true
+# You shouldn't edit rest of this file. It is maintained automatically or by in-game commands
+worlds:
+  exampleWorld:
+    radius: 4
+    offsetX: -1
+    offsetY: 1
