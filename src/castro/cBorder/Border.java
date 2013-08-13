@@ -125,7 +125,7 @@ public class Border
 		/*
 		 * Just log, debug purpose
 		 */
-		/**/
+		/**
 		Plugin.instance.log("CALCULATED BORDER:");
 		Plugin.instance.log(radius + " " + centerX + " " + centerZ);
 		Plugin.instance.log(lowChunkX + " " + lowChunkZ + " --- " + highChunkX + " " + highChunkZ);
