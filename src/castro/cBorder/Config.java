@@ -82,4 +82,10 @@ public class Config
 	{
 		return !con.getBoolean("protection");
 	}
+	
+	
+	public static boolean bouncePlayers()
+	{
+		return con.getBoolean("bounce");
+	}
 }

@@ -1,6 +1,8 @@
-# Disable protection against crashing and bugging at last chunks. DEBUG ONLY
-protection: true
+# bounce: Set to true to bounce players from border
+# protection: DEBUG ONLY. Set to false to disable protection against crashing and bugging at last chunks.
 # You shouldn't edit rest of this file. It is maintained automatically or by in-game commands
+bounce: true
+protection: true
 worlds:
   exampleWorld:
     radius: 4

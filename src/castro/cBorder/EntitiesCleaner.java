@@ -21,12 +21,14 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 
 
 public class EntitiesCleaner implements Runnable
 {
 	Plugin plugin = Plugin.get();
+	boolean bounce = Config.bouncePlayers();
 	
 	public void run()
 	{
@@ -45,7 +47,16 @@ public class EntitiesCleaner implements Runnable
 			{
 				Location newSafe = BorderMgr.getSafe(entity.getLocation());
 				if(newSafe != null)
+				{
+					if(entity instanceof CraftPlayer)
+					{
+						if(bounce)
+							plugin.sendMessage((CraftPlayer)entity, "&cYou have passed the border of this world");
+						else
+							continue;
+					}
 					entity.teleport(newSafe);
+				}
 			}
 			/*
 				if(!border.isSafe(entity.getLocation().getChunk()))
