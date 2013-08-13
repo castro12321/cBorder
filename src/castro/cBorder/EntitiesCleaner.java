@@ -21,8 +21,8 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 
 public class EntitiesCleaner implements Runnable
@@ -45,13 +45,16 @@ public class EntitiesCleaner implements Runnable
 			List<Entity> entities = world.getEntities();
 			for(Entity entity : entities)
 			{
+				if(entity.isInsideVehicle())
+					entity.leaveVehicle();
+				
 				Location newSafe = BorderMgr.getSafe(entity.getLocation());
 				if(newSafe != null)
 				{
-					if(entity instanceof CraftPlayer)
-					{
+					if(entity instanceof Player)
+					{						
 						if(bounce)
-							plugin.sendMessage((CraftPlayer)entity, "&cYou have passed the border of this world");
+							plugin.sendMessage((Player)entity, "&cYou have passed the border of this world");
 						else
 							continue;
 					}
