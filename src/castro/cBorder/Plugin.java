@@ -37,7 +37,6 @@ public class Plugin extends CPlugin
 		CPluginSettings settings = new CPluginSettings();
 		
 		settings.useConfig = true;
-		settings.listeners.add(new EventListener());
 		settings.commandMgr = new CommandMgr();
 		
 		return settings;
@@ -53,6 +52,8 @@ public class Plugin extends CPlugin
 		final int second = 20;
 		BukkitScheduler scheduler = getServer().getScheduler();
 		scheduler.scheduleSyncRepeatingTask(this, new EntitiesCleaner(), second, 1*second);
+		
+		getServer().getPluginManager().registerEvents(new EventListener(), this);
 	}
 	
 	
