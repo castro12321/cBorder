@@ -41,19 +41,21 @@ public class Config
 		set(world+".radius",  border.radius);
 		set(world+".offsetX", border.centerX);
 		set(world+".offsetZ", border.centerZ);
+		saveConfig();
 	}
 	
 	
 	public static void removeWorld(String world)
 	{
 		set(world, null);
+		saveConfig();
 	}
 	
 	
 	private static void set(String key, Object value)
 	{
-		worldsSection.set(key, value);
-		saveConfig();
+		con.set("worlds."+key, value);
+		//worldsSection.set(key, value);
 	}
 	
 	
