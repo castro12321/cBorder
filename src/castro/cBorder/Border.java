@@ -54,13 +54,20 @@ public class Border
 	
 	public Border(int radius, int offsetX, int offsetZ)
 	{
+		this.radius  = radius;
+		this.centerX = offsetX;
+		this.centerZ = offsetZ;
+		
+		init();
+	}
+	
+	
+	private void init()
+	{
 		if(spigot)
 			radius += 1;
 		else
 			radius += 2;
-		this.radius  = radius;
-		this.centerX = offsetX;
-		this.centerZ = offsetZ;
 		
 		/*
 		 * Settings chunks limit
@@ -95,9 +102,9 @@ public class Border
 		if(spigot)
 			safeOffset = 1;
 		safeLowChunkX  = lowChunkX  + safeOffset;
-		safeLowChunkZ  = lowChunkX  + safeOffset;
+		safeLowChunkZ  = lowChunkZ  + safeOffset;
 		safeHighChunkX = highChunkX - safeOffset;
-		safeHighChunkZ = highChunkX - safeOffset;
+		safeHighChunkZ = highChunkZ - safeOffset;
 		
 		/*
 		 * Setting safe blocks
@@ -106,14 +113,19 @@ public class Border
 		if(spigot)
 			safeOffset = 16;
 		safeLowBlockX  = lowBlockX  + safeOffset;
-		safeLowBlockZ  = lowBlockX  + safeOffset;
+		safeLowBlockZ  = lowBlockZ  + safeOffset;
 		safeHighBlockX = highBlockX - safeOffset;
-		safeHighBlockZ = highBlockX - safeOffset;
+		safeHighBlockZ = highBlockZ - safeOffset;
+		
+		if(spigot)
+			radius -= 1;
+		else
+			radius -= 2;
 		
 		/*
 		 * Just log, debug purpose
 		 */
-		/**
+		/**/
 		Plugin.instance.log("CALCULATED BORDER:");
 		Plugin.instance.log(radius + " " + centerX + " " + centerZ);
 		Plugin.instance.log(lowChunkX + " " + lowChunkZ + " --- " + highChunkX + " " + highChunkZ);
@@ -121,11 +133,6 @@ public class Border
 		Plugin.instance.log(safeLowChunkX + " " + safeLowChunkZ + " --- " + safeHighChunkX + " " + safeHighChunkZ);
 		Plugin.instance.log(safeLowBlockX + " " + safeLowBlockZ + " --- " + safeHighBlockX + " " + safeHighBlockZ);
 		/**/
-		
-		if(spigot)
-			this.radius -= 1;
-		else
-			this.radius -= 2;
 	}
 	
 	
