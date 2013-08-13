@@ -30,6 +30,19 @@ public class Config
 	private static ConfigurationSection worldsSection = con.getConfigurationSection("worlds");
 	
 	
+	private void checkSet(String key, Object value)
+	{
+		if(!con.isSet(key))
+			set(key, value);
+	}
+	
+	
+	public Config()
+	{
+		checkSet("bounce", true);
+	}
+	
+	
 	public static void saveConfig()
 	{
 		plugin.saveConfig();
