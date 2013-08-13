@@ -40,8 +40,12 @@ public class Config
 	
 	private void checkSet(String key, Object value)
 	{
+		plugin.log("Checking " + key + " with " + value);
 		if(!con.isSet(key))
+		{
+			plugin.log("Setting it!");
 			set(key, value);
+		}
 	}
 	
 	
@@ -53,23 +57,23 @@ public class Config
 	
 	public static void setBorder(String world, Border border)
 	{
-		set(world+".radius",  border.radius);
-		set(world+".offsetX", border.centerX);
-		set(world+".offsetZ", border.centerZ);
+		set("worlds."+world+".radius",  border.radius);
+		set("worlds."+world+".offsetX", border.centerX);
+		set("worlds."+world+".offsetZ", border.centerZ);
 		saveConfig();
 	}
 	
 	
 	public static void removeWorld(String world)
 	{
-		set(world, null);
+		set("worlds."+world, null);
 		saveConfig();
 	}
 	
 	
 	private static void set(String key, Object value)
 	{
-		con.set("worlds."+key, value);
+		con.set(key, value);
 		//worldsSection.set(key, value);
 	}
 	

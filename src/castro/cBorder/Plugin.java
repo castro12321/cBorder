@@ -47,6 +47,8 @@ public class Plugin extends CPlugin
 	public void init()
 	{
 		new CMV(this); // To obtain Multiverse plugin instance
+		new Config();
+		
 		BorderMgr.init();
 		
 		final int second = 20;
