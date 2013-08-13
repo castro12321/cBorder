@@ -20,26 +20,28 @@ package castro.cBorder;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class Config
 {
-	protected static Plugin plugin = Plugin.get();
-	private static FileConfiguration con = plugin.getConfig();
-	private static ConfigurationSection worldsSection = con.getConfigurationSection("worlds");
+	protected static Plugin plugin;// = Plugin.get();
+	private static FileConfiguration con;// = plugin.getConfig();
+	
+	
+	public Config()
+	{
+		plugin = Plugin.get();
+		con = plugin.getConfig();
+		
+		checkSet("bounce", true);
+		saveConfig();
+	}
 	
 	
 	private void checkSet(String key, Object value)
 	{
 		if(!con.isSet(key))
 			set(key, value);
-	}
-	
-	
-	public Config()
-	{
-		checkSet("bounce", true);
 	}
 	
 	
@@ -75,9 +77,9 @@ public class Config
 	private static Border getBorder(String world)
 	{
 		return new Border(
-				worldsSection.getInt(world+".radius"),
-				worldsSection.getInt(world+".offsetX"),
-				worldsSection.getInt(world+".offsetZ"));
+				con.getInt("worlds."+world+".radius"),
+				con.getInt("worlds."+world+".offsetX"),
+				con.getInt("worlds."+world+".offsetZ"));
 	}
 	
 	
@@ -85,7 +87,7 @@ public class Config
 	{
 		HashMap<String, Border> borders = new HashMap<String, Border>();
 		
-		Set<String> worlds = worldsSection.getKeys(false);
+		Set<String> worlds = con.getConfigurationSection("worlds").getKeys(false);
 		for(String world : worlds)
 			borders.put(world, getBorder(world));
 		
