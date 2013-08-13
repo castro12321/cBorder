@@ -23,6 +23,7 @@ import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
 
 
+// TODO: Store unloaded chunks in array and then reload them after limit change
 public class Plugin extends CPlugin
 {
 	protected static Plugin instance;
