@@ -40,12 +40,8 @@ public class Config
 	
 	private void checkSet(String key, Object value)
 	{
-		plugin.log("Checking " + key + " with " + value);
 		if(!con.isSet(key))
-		{
-			plugin.log("Setting it!");
 			set(key, value);
-		}
 	}
 	
 	

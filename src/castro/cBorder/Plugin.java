@@ -46,7 +46,6 @@ public class Plugin extends CPlugin
 	@Override
 	public void init()
 	{
-		new CMV(this); // To obtain Multiverse plugin instance
 		new Config();
 		
 		BorderMgr.init();
