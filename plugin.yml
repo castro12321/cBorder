@@ -1,8 +1,8 @@
 name: cBorder
 main: castro.cBorder.Plugin
-version: 1.0.2
+version: 1.0.3
 load: STARTUP
-depend: [Base_cPlugin, Multiverse-Core]
+depend: [Base_cPlugin]
 commands:
   cborder:
     description: Main command
