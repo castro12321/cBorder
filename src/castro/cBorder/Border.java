@@ -19,6 +19,7 @@ package castro.cBorder;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 
@@ -205,6 +206,22 @@ public class Border
 		return false;
 	}
 	
+	
+	public Location getSafe(Location from)
+	{		
+		int x, z, newX, newZ;
+		x = newX = from.getBlockX();
+		z = newZ = from.getBlockZ();
+		
+		if(x > safeHighBlockX) newX = safeHighBlockX-3;
+		if(z > safeHighBlockZ) newZ = safeHighBlockZ-3;
+		if(x < safeLowBlockX)  newX = safeLowBlockX+3;
+		if(z < safeLowBlockZ)  newZ = safeLowBlockZ+3;	
+		
+		if(x != newX || z != newZ)
+			return from.getWorld().getHighestBlockAt(newX, newZ).getLocation();
+		return null;
+	}
 	
 	/**
 	 * Old, do not touch. (Am I doing museum? :D)

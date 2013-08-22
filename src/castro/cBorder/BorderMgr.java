@@ -17,15 +17,20 @@
 
 package castro.cBorder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.ChunkLoadEvent;
 
-public class BorderMgr
+
+public class BorderMgr implements Listener
 {
+	
 	private static HashMap<String, Border> limits = new HashMap<String, Border>();
 	private static Border noBorder = new NoBorder();
 	
@@ -72,34 +77,14 @@ public class BorderMgr
 	}
 	
 	
-	// Check player for being near plot edge (causes world loading errors) If so, teleport to safe location
-	public static void checkPlayer(Player player, PlayerTeleportEvent event)
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onChunkLoad(ChunkLoadEvent event)
 	{
-		Location newLocation = getSafe(event.getTo());
-		if(newLocation != null)
-			event.setTo(newLocation);
-			// schedule teleport back to position where logged in in one tick/second
-			// maybe do the same with other entities?
-			// --- nope, added buffer chunk
-	}
-	
-	
-	public static Location getSafe(Location from)
-	{
-		World world = from.getWorld();
-		Border border = getBorder(world);
+		Border border = BorderMgr.getBorder(event.getWorld());
 		
-		int x, z, newX, newZ;
-		x = newX = from.getBlockX();
-		z = newZ = from.getBlockZ();
-		
-		if(x > border.safeHighBlockX) newX = border.safeHighBlockX-3;
-		if(z > border.safeHighBlockZ) newZ = border.safeHighBlockZ-3;
-		if(x < border.safeLowBlockX)  newX = border.safeLowBlockX+3;
-		if(z < border.safeLowBlockZ)  newZ = border.safeLowBlockZ+3;	
-		
-		if(x != newX || z != newZ)
-			return world.getHighestBlockAt(newX, newZ).getLocation();
-		return null;
+		if(border.isOutsideLimit(event.getChunk())) // Check if chunk is beyond limit --> unload
+		{
+			event.getChunk().unload(false, false);
+		}
 	}
 }

@@ -17,6 +17,7 @@
 
 package castro.cBorder;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -86,12 +87,21 @@ public class ProtectionListener implements Listener
 	}
 	
 	
+	// Check player for being near plot edge (causes world loading errors) If so, teleport to safe location
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event)
 	{
 		if(disableProtection)
 			return;
 		
-		BorderMgr.checkPlayer(event.getPlayer(), event);
+		Location to = event.getTo();
+		Border border = BorderMgr.getBorder(to.getWorld());
+		
+		Location newLocation = border.getSafe(to);
+		if(newLocation != null)
+			event.setTo(newLocation);
+			// schedule teleport back to position where logged in in one tick/second
+			// maybe do the same with other entities?
+			// --- nope, added buffer chunk
 	}
 }

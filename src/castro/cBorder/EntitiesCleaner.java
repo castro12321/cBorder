@@ -48,7 +48,7 @@ public class EntitiesCleaner implements Runnable
 				if(entity.isInsideVehicle())
 					entity.leaveVehicle();
 				
-				Location newSafe = BorderMgr.getSafe(entity.getLocation());
+				Location newSafe = border.getSafe(entity.getLocation());
 				if(newSafe != null)
 				{
 					if(entity instanceof Player)
