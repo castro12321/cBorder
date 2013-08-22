@@ -17,77 +17,13 @@
 
 package castro.cBorder;
 
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 
 public class EventListener implements Listener
 {
-	private boolean disableProtection = Config.protectionDisabled(); 
-	
-	
-	@EventHandler
-	public void onLiquidFlow(BlockFromToEvent event)
-	{
-		if(disableProtection)
-			return;
-		
-		// TODO: sprawdzic, czy event sie pojawia podczas wylewania poza mape
-		Border border = BorderMgr.getBorder(event.getBlock().getWorld());
-		
-		Block from = event.getBlock();
-		if(border.isLastBlock(from))
-		{
-			event.setCancelled(true);
-			setStationary(from);
-		}
-		
-		Block to = event.getToBlock();
-		if(border.isLastBlock(to))
-		{
-			event.setCancelled(true);
-			setStationary(to);
-		}
-	}
-	private void setStationary(Block block)
-	{
-		if(block.getTypeId() > 9)
-			block.setTypeId(Material.STATIONARY_LAVA.getId(), false);
-		else // water
-			block.setTypeId(Material.STATIONARY_WATER.getId(), false);
-	}
-	
-	
-	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event)
-	{
-		/* Disabled. Entities cleaner now handles it.
-		if(disableProtection)
-			return;
-		
-		Player player = event.getPlayer();
-		Material holded = player.getItemInHand().getType();
-		
-		switch(holded)
-		{
-		case EYE_OF_ENDER:
-		case FIREWORK:
-		case EGG:
-		case POTION:
-			if(BorderMgr.contains(player.getWorld().getName()))
-				event.setCancelled(true);
-		default:
-		}
-		*/
-	}
-	
-	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onChunkLoad(ChunkLoadEvent event)
 	{
@@ -95,15 +31,5 @@ public class EventListener implements Listener
 		
 		if(border.isOutsideLimit(event.getChunk())) // Check if chunk is beyond limit --> unload
 			event.getChunk().unload(false, false);
-	}
-	
-	
-	@EventHandler
-	public void onPlayerTeleport(PlayerTeleportEvent event)
-	{
-		if(disableProtection)
-			return;
-		
-		BorderMgr.checkPlayer(event.getPlayer(), event);
 	}
 }

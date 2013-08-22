@@ -17,6 +17,7 @@
 
 package castro.cBorder;
 
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import castro.base.plugin.CPlugin;
@@ -54,7 +55,9 @@ public class Plugin extends CPlugin
 		BukkitScheduler scheduler = getServer().getScheduler();
 		scheduler.scheduleSyncRepeatingTask(this, new EntitiesCleaner(), second, 1*second);
 		
-		getServer().getPluginManager().registerEvents(new EventListener(), this);
+		PluginManager PM = getServer().getPluginManager();
+		PM.registerEvents(new EventListener(), this);
+		PM.registerEvents(new ProtectionListener(), this);
 	}
 	
 	
