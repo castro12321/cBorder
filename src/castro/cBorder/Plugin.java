@@ -20,6 +20,8 @@ package castro.cBorder;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+
 import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
 
@@ -28,6 +30,12 @@ import castro.base.plugin.CPluginSettings;
 public class Plugin extends CPlugin
 {
 	protected static Plugin instance;
+	
+	
+	WorldEditPlugin getWorldEdit()
+	{
+		return (WorldEditPlugin)getServer().getPluginManager().getPlugin("WorldEdit");
+	}
 	
 	
 	@Override

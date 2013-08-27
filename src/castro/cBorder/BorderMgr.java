@@ -17,20 +17,14 @@
 
 package castro.cBorder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.bukkit.World;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkLoadEvent;
 
 
 public class BorderMgr implements Listener
 {
-	
 	private static HashMap<String, Border> limits = new HashMap<String, Border>();
 	private static Border noBorder = new NoBorder();
 	
@@ -57,13 +51,16 @@ public class BorderMgr implements Listener
 	}
 	
 	
-	public static void setBorder(String world, Border border)
+	public static void setBorder(String worldname, Border newBorder)
 	{
-		if(border.equals(getBorder(world)))
+		if(newBorder.equals(getBorder(worldname)))
 			return;
 		
-		limits.put(world, border);
-		Config.setBorder(world, border);
+		
+		Config.setBorder(worldname, newBorder);
+		Border oldBorder = limits.put(worldname, newBorder);
+		
+		BorderListener.refreshBorder(oldBorder, newBorder, worldname);
 	}
 	
 	
@@ -73,18 +70,6 @@ public class BorderMgr implements Listener
 		{
 			limits.remove(world);
 			Config.removeWorld(world);
-		}
-	}
-	
-	
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onChunkLoad(ChunkLoadEvent event)
-	{
-		Border border = BorderMgr.getBorder(event.getWorld());
-		
-		if(border.isOutsideLimit(event.getChunk())) // Check if chunk is beyond limit --> unload
-		{
-			event.getChunk().unload(false, false);
 		}
 	}
 }
