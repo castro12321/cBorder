@@ -34,6 +34,7 @@ public class Config
 		con = plugin.getConfig();
 		
 		checkSet("bounce", true);
+		checkSet("protection", true);
 		saveConfig();
 	}
 	
