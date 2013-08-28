@@ -160,19 +160,23 @@ public class Border
 	public boolean isOutsideLimit(Block block) // If we have block then it is inside limit, because chunk is loaded
 	{ return isOutsideLimit(block.getChunk()); }
 	public boolean isOutsideLimit(Chunk chunk)
+	{ return isOutsideLimit(chunk.getX(), chunk.getZ()); }
+	public boolean isOutsideLimit(int chunkX, int chunkZ)
 	{
-		return chunk.getX() > highChunkX
-			|| chunk.getZ() > highChunkZ
-			|| chunk.getX() < lowChunkX
-			|| chunk.getZ() < lowChunkZ;
+		return chunkX > highChunkX
+			|| chunkZ > highChunkZ
+			|| chunkX < lowChunkX
+			|| chunkZ < lowChunkZ;
 	}
 	
 	
 	public boolean isInsideLimit(Block block)
 	{ return isInsideLimit(block.getChunk()); }
 	public boolean isInsideLimit(Chunk chunk)
+	{ return isInsideLimit(chunk.getX(), chunk.getZ()); }
+	public boolean isInsideLimit(int chunkX, int chunkZ)
 	{
-		return !isOutsideLimit(chunk);
+		return !isOutsideLimit(chunkX, chunkZ);
 	}
 	
 	
