@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 
 class UnloadedChunk
@@ -32,13 +34,24 @@ class UnloadedChunk
 		this.x = x;
 		this.z = y;
 	}
+	
+	
+	public boolean equals(Object o)
+	{
+		if(o instanceof UnloadedChunk)
+		{
+			UnloadedChunk uc = (UnloadedChunk)o;
+			return uc.x == x && uc.z == z;
+		}
+		return false;
+	}
 }
 
 
 public class UnloadedChunks
 {
 	public final String worldname;
-	List<UnloadedChunk> unloadedChunks = new ArrayList<>();
+	private List<UnloadedChunk> unloadedChunks = new ArrayList<>();
 	
 	
 	public UnloadedChunks(String world)
@@ -54,7 +67,16 @@ public class UnloadedChunks
 	}
 	
 	
-	Plugin plugin = Plugin.get();
+	public void removeUnloaded(Chunk chunk)
+	{
+		removeUnloaded(new UnloadedChunk(chunk.getX(), chunk.getZ()));
+	}
+	public void removeUnloaded(UnloadedChunk uChunk)
+	{
+		unloadedChunks.remove(uChunk);
+	}
+	
+	
 	public void loadUnloaded(Border border)
 	{
 		final boolean generate = true;
@@ -63,7 +85,11 @@ public class UnloadedChunks
 		List<UnloadedChunk> unloadedChunks = new ArrayList<>(this.unloadedChunks);
 		for(UnloadedChunk uChunk : unloadedChunks)
 			if(border.isInsideLimit(uChunk.x, uChunk.z))
+			{
+				removeUnloaded(uChunk);
 				world.getChunkAt(uChunk.x, uChunk.z).load(generate);
+				world.refreshChunk(uChunk.x, uChunk.z);
+			}
 	}
 	
 	
@@ -75,6 +101,21 @@ public class UnloadedChunks
 		Chunk[] loadedChunks = world.getLoadedChunks();
 		for(Chunk chunk : loadedChunks)
 			if(border.isOutsideLimit(chunk))
+			{
+				addUnloaded(chunk);
 				chunk.unload(save, safe);
+				
+				//Doesn't work :<
+				//world.refreshChunk(chunk.getX(), chunk.getZ());
+				
+				/* sendChunkChange is not implemented yet
+				for(Player player : world.getPlayers())
+				{
+					Block first = chunk.getBlock(0, 0, 0);
+					byte[] data = new byte[0];
+					player.sendChunkChange(first.getLocation(), 16, 256, 16, data);
+				}
+				*/
+			}
 	}
 }
