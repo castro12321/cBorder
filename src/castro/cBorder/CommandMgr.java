@@ -19,6 +19,7 @@ package castro.cBorder;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,8 +38,9 @@ public class CommandMgr implements GenericCommandMgr
 	Command command;
 	String[] args;
 	
+	
 	public boolean onCommand(CommandSender sender, Command command, String[] args)
-	{
+	{	
 		this.sender = sender;
 		this.command = command;
 		this.args = args;
@@ -57,6 +59,8 @@ public class CommandMgr implements GenericCommandMgr
 			return remove();
 		if(action.equals("selected"))
 			return selected();
+		if(action.equals("info"))
+			return info();
 		return false;
 	}
 	
@@ -151,5 +155,22 @@ public class CommandMgr implements GenericCommandMgr
 		
 		BorderMgr.setBorder(world, new Border(radius, offsetX, offsetZ));
 		return plugin.sendMessage(sender, "Created border for " + world + " with radius " + radius + " at chunk " + offsetX + ", " + offsetZ);
+	}
+	
+	
+	private boolean info()
+	{
+		if(player == null)
+			return false;
+		
+		World world	= player.getWorld();
+		Border border = BorderMgr.getBorder(world);
+		
+		plugin.sendMessage(sender, "Border info for world " + world.getName());
+		plugin.sendMessage(sender, "center: " + border.centerX + " " + border.centerZ);
+		plugin.sendMessage(sender, "radius: " + border.radius);
+		plugin.sendMessage(sender, "safe c: " + border.safeLowChunkX + " " + border.safeLowChunkZ + " - " + border.safeHighChunkX + " " + border.safeHighChunkZ);
+		
+		return true;
 	}
 }
