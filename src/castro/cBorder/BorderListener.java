@@ -18,6 +18,7 @@
 package castro.cBorder;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -25,7 +26,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
 
@@ -34,7 +35,19 @@ public class BorderListener implements Listener
 	private static HashMap<String, UnloadedChunks> unloadedChunks = new HashMap<>();
 	
 	
-	@EventHandler(priority = EventPriority.HIGHEST)
+	public BorderListener()
+	{
+		// Catch already loaded worlds
+		List<World> worlds = Plugin.get().getServer().getWorlds();
+		for(World world : worlds)
+		{
+			String worldname = world.getName();
+			unloadedChunks.put(worldname, new UnloadedChunks(worldname));
+		}
+	}
+	
+	
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onChunkLoad(ChunkLoadEvent event)
 	{
 		World world = event.getWorld();
@@ -49,13 +62,15 @@ public class BorderListener implements Listener
 	}
 	
 	
-	public void onWorldLoad(WorldLoadEvent event)
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onWorldInit(WorldInitEvent event)
 	{
 		String worldname = event.getWorld().getName();
 		unloadedChunks.put(worldname, new UnloadedChunks(worldname));
 	}
 	
 	
+	@EventHandler
 	public void onWorldUnload(WorldUnloadEvent event)
 	{
 		String worldname = event.getWorld().getName();

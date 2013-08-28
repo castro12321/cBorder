@@ -37,13 +37,13 @@ class UnloadedChunk
 
 public class UnloadedChunks
 {
-	public final String world;
+	public final String worldname;
 	List<UnloadedChunk> unloadedChunks = new ArrayList<>();
 	
 	
 	public UnloadedChunks(String world)
 	{
-		this.world = world;
+		this.worldname = world;
 	}
 	
 	
@@ -54,27 +54,27 @@ public class UnloadedChunks
 	}
 	
 	
+	Plugin plugin = Plugin.get();
 	public void loadUnloaded(Border border)
 	{
 		final boolean generate = true;
 		
-		World world = Plugin.get().getServer().getWorld(this.world);
+		World world = Plugin.get().getServer().getWorld(worldname);
+		List<UnloadedChunk> unloadedChunks = new ArrayList<>(this.unloadedChunks);
 		for(UnloadedChunk uChunk : unloadedChunks)
-			if(uChunk.x <= border.highChunkX
-			&& uChunk.z <= border.highChunkZ)
+			if(border.isInsideLimit(uChunk.x, uChunk.z))
 				world.getChunkAt(uChunk.x, uChunk.z).load(generate);
 	}
 	
 	
 	public void unloadLoaded(Border border)
 	{
-		final boolean save = true, safe = true;
+		final boolean save = true, safe = false;
 		
-		World world = Plugin.get().getServer().getWorld(this.world);
+		World world = Plugin.get().getServer().getWorld(worldname);
 		Chunk[] loadedChunks = world.getLoadedChunks();
 		for(Chunk chunk : loadedChunks)
-			if(chunk.getX() > border.highChunkX
-			|| chunk.getZ() > border.highChunkZ)
+			if(border.isOutsideLimit(chunk))
 				chunk.unload(save, safe);
 	}
 }
