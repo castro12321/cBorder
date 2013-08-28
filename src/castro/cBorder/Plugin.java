@@ -64,8 +64,8 @@ public class Plugin extends CPlugin
 		scheduler.scheduleSyncRepeatingTask(this, new EntitiesCleaner(), second, 1*second);
 		
 		PluginManager PM = getServer().getPluginManager();
-		PM.registerEvents(new BorderMgr(), this);
 		PM.registerEvents(new ProtectionListener(), this);
+		PM.registerEvents(new BorderListener(), this);
 	}
 	
 	

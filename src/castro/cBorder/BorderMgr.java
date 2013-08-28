@@ -20,10 +20,9 @@ package castro.cBorder;
 import java.util.HashMap;
 
 import org.bukkit.World;
-import org.bukkit.event.Listener;
 
 
-public class BorderMgr implements Listener
+public class BorderMgr
 {
 	private static HashMap<String, Border> limits = new HashMap<String, Border>();
 	private static Border noBorder = new NoBorder();
