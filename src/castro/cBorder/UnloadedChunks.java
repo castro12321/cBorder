@@ -54,22 +54,27 @@ public class UnloadedChunks
 	}
 	
 	
-	public void refreshUnloaded()
+	public void loadUnloaded(Border border)
 	{
+		final boolean generate = true;
+		
 		World world = Plugin.get().getServer().getWorld(this.world);
 		for(UnloadedChunk uChunk : unloadedChunks)
-			chunk ma sie loadowac tylko wtedy, gdy jest niedaleko gracz
-			world.getChunkAt(uChunk.x, uChunk.z).load(true or false?);
+			if(uChunk.x <= border.highChunkX
+			&& uChunk.z <= border.highChunkZ)
+				world.getChunkAt(uChunk.x, uChunk.z).load(generate);
 	}
 	
 	
-	public void refreshLoaded()
+	public void unloadLoaded(Border border)
 	{
+		final boolean save = true, safe = true;
+		
 		World world = Plugin.get().getServer().getWorld(this.world);
 		Chunk[] loadedChunks = world.getLoadedChunks();
 		for(Chunk chunk : loadedChunks)
-			Chunk unload ma bys zapisany oraz
-			unloadowac sie tylko wtedy, gdy jest daleko od gracza
-			chunk.unload(jakie, argumenty?);
+			if(chunk.getX() > border.highChunkX
+			|| chunk.getZ() > border.highChunkZ)
+				chunk.unload(save, safe);
 	}
 }

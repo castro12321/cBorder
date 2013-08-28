@@ -73,9 +73,9 @@ public class BorderListener implements Listener
 				// If new radius is greater, load unloaded chunks
 				// If new radius is smaller, unload chunks beyond limit
 				if(newBorder.radius > oldBorder.radius)
-					unloadedChunks.get(worldname).refreshUnloaded();
+					unloadedChunks.get(worldname).loadUnloaded(newBorder);
 				else if(newBorder.radius < oldBorder.radius)
-					unloadedChunks.get(worldname).refreshLoaded();
+					unloadedChunks.get(worldname).unloadLoaded(newBorder);
 			}
 		}
 	}
