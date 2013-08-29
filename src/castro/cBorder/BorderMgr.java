@@ -55,7 +55,6 @@ public class BorderMgr
 		if(newBorder.equals(getBorder(worldname)))
 			return;
 		
-		
 		Config.setBorder(worldname, newBorder);
 		Border oldBorder = limits.put(worldname, newBorder);
 		

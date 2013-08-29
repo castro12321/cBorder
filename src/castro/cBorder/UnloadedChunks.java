@@ -21,8 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 
@@ -67,11 +68,13 @@ public class UnloadedChunks
 	}
 	
 	
-	public void removeUnloaded(Chunk chunk)
+	/*
+	private void removeUnloaded(Chunk chunk)
 	{
 		removeUnloaded(new UnloadedChunk(chunk.getX(), chunk.getZ()));
 	}
-	public void removeUnloaded(UnloadedChunk uChunk)
+	*/
+	private void removeUnloaded(UnloadedChunk uChunk)
 	{
 		unloadedChunks.remove(uChunk);
 	}
@@ -79,17 +82,16 @@ public class UnloadedChunks
 	
 	public void loadUnloaded(Border border)
 	{
-		final boolean generate = true;
+		//final boolean generate = true;
 		
 		World world = Plugin.get().getServer().getWorld(worldname);
 		List<UnloadedChunk> unloadedChunks = new ArrayList<>(this.unloadedChunks);
 		for(UnloadedChunk uChunk : unloadedChunks)
 			if(border.isInsideLimit(uChunk.x, uChunk.z))
-			{
 				removeUnloaded(uChunk);
-				world.getChunkAt(uChunk.x, uChunk.z).load(generate);
-				world.refreshChunk(uChunk.x, uChunk.z);
-			}
+		
+		for(Player player : world.getPlayers())
+			refreshChunks(player);
 	}
 	
 	
@@ -104,18 +106,50 @@ public class UnloadedChunks
 			{
 				addUnloaded(chunk);
 				chunk.unload(save, safe);
-				
-				//Doesn't work :<
-				//world.refreshChunk(chunk.getX(), chunk.getZ());
-				
-				/* sendChunkChange is not implemented yet
-				for(Player player : world.getPlayers())
-				{
-					Block first = chunk.getBlock(0, 0, 0);
-					byte[] data = new byte[0];
-					player.sendChunkChange(first.getLocation(), 16, 256, 16, data);
-				}
-				*/
 			}
+		
+		for(Player player : world.getPlayers())
+			refreshChunks(player);
+	}
+	
+	
+	/**
+	 * Teleports player to other map and teleports him back
+	 * @param player
+	 */
+	private class TeleportBack implements Runnable
+	{
+		Player player;
+		Location back;
+		
+		TeleportBack(Player player, Location back)
+		{
+			this.player = player;
+			this.back = back;
+		}
+		
+		@Override
+		public void run()
+		{
+			player.teleport(back);
+		}
+	}
+	
+	
+	private void refreshChunks(Player player)
+	{
+		Plugin plugin = Plugin.get();
+		Server server = plugin.getServer();
+		
+		Location oldLocation = player.getLocation();
+		World tmpWorld = server.getWorlds().get(0);
+		if(tmpWorld.equals(oldLocation.getWorld()))
+			tmpWorld = server.getWorlds().get(1);
+		Location tmpLocation = tmpWorld.getSpawnLocation();
+		
+		player.teleport(tmpLocation);
+		
+		TeleportBack teleportBack = new TeleportBack(player, oldLocation);
+		server.getScheduler().scheduleSyncDelayedTask(plugin, teleportBack);
 	}
 }
