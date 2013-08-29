@@ -19,6 +19,7 @@ package castro.cBorder;
 
 import java.util.HashMap;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -61,7 +62,7 @@ public class BorderMgr
 		Config.setBorder(worldname, newBorder);
 		limits.put(worldname, newBorder);
 		
-		refreshChunks(worldname);
+		refreshChunks(worldname, newBorder);
 	}
 	
 	
@@ -98,11 +99,16 @@ public class BorderMgr
 	}
 	
 	
-	private static void refreshChunks(String worldname)
+	private static void refreshChunks(String worldname, Border border)
 	{
 		World world = Plugin.get().getServer().getWorld(worldname);
 		if(world == null)
 			return;
+		
+		Chunk[] loadedChunks = world.getLoadedChunks();
+		for(Chunk chunk : loadedChunks)
+			if(border.isOutsideLimit(chunk))
+				chunk.unload(true, false);
 		
 		for(Player player : world.getPlayers())
 			refreshChunks(player);
