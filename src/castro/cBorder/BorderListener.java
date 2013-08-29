@@ -17,36 +17,16 @@
 
 package castro.cBorder;
 
-import java.util.HashMap;
-import java.util.List;
-
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.WorldInitEvent;
-import org.bukkit.event.world.WorldUnloadEvent;
 
 
 public class BorderListener implements Listener
-{
-	private static HashMap<String, UnloadedChunks> unloadedChunks = new HashMap<>();
-	
-	
-	public BorderListener()
-	{
-		// Catch already loaded worlds
-		List<World> worlds = Plugin.get().getServer().getWorlds();
-		for(World world : worlds)
-		{
-			String worldname = world.getName();
-			unloadedChunks.put(worldname, new UnloadedChunks(worldname));
-		}
-	}
-	
-	
+{	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onChunkLoad(ChunkLoadEvent event)
 	{
@@ -55,43 +35,6 @@ public class BorderListener implements Listener
 		
 		Chunk chunk = event.getChunk();
 		if(border.isOutsideLimit(chunk)) // Check if chunk is beyond limit --> unload
-		{
 			chunk.unload(false, false);
-			unloadedChunks.get(world.getName()).addUnloaded(chunk);
-		}
-	}
-	
-	
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onWorldInit(WorldInitEvent event)
-	{
-		String worldname = event.getWorld().getName();
-		unloadedChunks.put(worldname, new UnloadedChunks(worldname));
-	}
-	
-	
-	@EventHandler
-	public void onWorldUnload(WorldUnloadEvent event)
-	{
-		String worldname = event.getWorld().getName();
-		unloadedChunks.remove(worldname);
-	}
-	
-	
-	public static void refreshBorder(Border oldBorder, Border newBorder, String worldname)
-	{
-		if(oldBorder != null)
-		{
-			World world = Plugin.get().getServer().getWorld(worldname);
-			if(world != null)
-			{
-				// If new radius is greater, load unloaded chunks
-				// If new radius is smaller, unload chunks beyond limit
-				if(newBorder.radius > oldBorder.radius)
-					unloadedChunks.get(worldname).loadUnloaded(newBorder);
-				else if(newBorder.radius < oldBorder.radius)
-					unloadedChunks.get(worldname).unloadLoaded(newBorder);
-			}
-		}
 	}
 }

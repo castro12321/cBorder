@@ -19,7 +19,10 @@ package castro.cBorder;
 
 import java.util.HashMap;
 
+import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 
 public class BorderMgr
@@ -51,14 +54,14 @@ public class BorderMgr
 	
 	
 	public static void setBorder(String worldname, Border newBorder)
-	{
+	{		
 		if(newBorder.equals(getBorder(worldname)))
 			return;
 		
 		Config.setBorder(worldname, newBorder);
-		Border oldBorder = limits.put(worldname, newBorder);
+		limits.put(worldname, newBorder);
 		
-		BorderListener.refreshBorder(oldBorder, newBorder, worldname);
+		refreshChunks(worldname);
 	}
 	
 	
@@ -69,5 +72,57 @@ public class BorderMgr
 			limits.remove(world);
 			Config.removeWorld(world);
 		}
+	}
+	
+	
+	/**
+	 * Teleports player to other map and teleports him back
+	 * @param player
+	 */
+	private static class TeleportBack implements Runnable
+	{
+		Player player;
+		Location back;
+		
+		TeleportBack(Player player, Location back)
+		{
+			this.player = player;
+			this.back = back;
+		}
+		
+		@Override
+		public void run()
+		{
+			player.teleport(back);
+		}
+	}
+	
+	
+	private static void refreshChunks(String worldname)
+	{
+		World world = Plugin.get().getServer().getWorld(worldname);
+		if(world == null)
+			return;
+		
+		for(Player player : world.getPlayers())
+			refreshChunks(player);
+	}
+	
+	
+	private static void refreshChunks(Player player)
+	{
+		Plugin plugin = Plugin.get();
+		Server server = plugin.getServer();
+		
+		Location oldLocation = player.getLocation();
+		World tmpWorld = server.getWorlds().get(0);
+		if(tmpWorld.equals(oldLocation.getWorld()))
+			tmpWorld = server.getWorlds().get(1);
+		Location tmpLocation = tmpWorld.getSpawnLocation();
+		
+		player.teleport(tmpLocation);
+		
+		TeleportBack teleportBack = new TeleportBack(player, oldLocation);
+		server.getScheduler().scheduleSyncDelayedTask(plugin, teleportBack);
 	}
 }
