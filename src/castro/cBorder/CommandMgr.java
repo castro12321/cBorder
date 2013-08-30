@@ -68,35 +68,48 @@ public class CommandMgr implements GenericCommandMgr
 	// cb set <radius> [world] [offsetX] [offsetZ]
 	private boolean set()
 	{
-		String world = null;
-		int radius, offsetX = 0, offsetZ = 0;
-		if(player != null)
+		try
 		{
-			world = player.getWorld().getName();
+			String world = null;
+			int radius, offsetX = 0, offsetZ = 0;
+			if(player != null)
+			{
+				world = player.getWorld().getName();
+				
+				Chunk chunk = player.getLocation().getChunk();
+				offsetX = chunk.getX();
+				offsetZ = chunk.getZ();
+			}
 			
-			Chunk chunk = player.getLocation().getChunk();
-			offsetX = chunk.getX();
-			offsetZ = chunk.getZ();
+			switch(args.length)
+			{
+			default:
+			case 5:
+				offsetZ	= Integer.valueOf(args[4]);
+			case 4:
+				offsetX	= Integer.valueOf(args[3]);
+			case 3:
+				world	= args[2];
+			case 2:
+				radius	= Integer.valueOf(args[1]);
+				break;
+			case 1:
+			case 0:
+				return !plugin.sendMessage(sender, "You have passed not enough parameters");
+			}
+			
+			int borderLimit = 3000000;
+			if( radius < 0			 || radius  > borderLimit
+			|| offsetX > borderLimit || offsetX < -borderLimit
+			|| offsetZ > borderLimit || offsetZ < -borderLimit)
+				return !plugin.sendMessage(sender, "You have passed illegal values");
+			
+			return setBorder(sender, world, radius, offsetX, offsetZ);
 		}
-		
-		switch(args.length)
+		catch(NumberFormatException e)
 		{
-		default:
-		case 5:
-			offsetZ	= Integer.valueOf(args[4]);
-		case 4:
-			offsetX	= Integer.valueOf(args[3]);
-		case 3:
-			world	= args[2];
-		case 2:
-			radius	= Integer.valueOf(args[1]);
-			break;
-		case 1:
-		case 0:
-			return !plugin.sendMessage(sender, "You have passed not enough parameters");
+			return !plugin.sendMessage(sender, "You have passed illegal values");
 		}
-		
-		return setBorder(sender, world, radius, offsetX, offsetZ);
 	}
 	
 	

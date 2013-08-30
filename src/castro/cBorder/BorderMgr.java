@@ -66,13 +66,15 @@ public class BorderMgr
 	}
 	
 	
-	public static void removeBorder(String world)
+	public static void removeBorder(String worldname)
 	{
-		if(limits.containsKey(world))
+		if(limits.containsKey(worldname))
 		{
-			limits.remove(world);
-			Config.removeWorld(world);
+			limits.remove(worldname);
+			Config.removeWorld(worldname);
 		}
+		
+		refreshChunks(worldname, noBorder);
 	}
 	
 	
