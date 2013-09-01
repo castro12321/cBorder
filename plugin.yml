@@ -1,6 +1,6 @@
 name: cBorder
 main: castro.cBorder.Plugin
-version: 1.0.3
+version: 1.1.0
 load: STARTUP
 depend: [Base_cPlugin]
 commands:
