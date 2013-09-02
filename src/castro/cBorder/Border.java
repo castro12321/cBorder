@@ -17,6 +17,7 @@
 
 package castro.cBorder;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -53,14 +54,34 @@ public class Border
 	
 	
 	
+	
+	
 	public Border(int radius, int offsetX, int offsetZ)
 	{
+		//this(radius, radius, offsetX, offsetZ);
+		// TODO: move it to Border(int, int, int, int)
 		this.radius  = radius;
 		this.centerX = offsetX;
 		this.centerZ = offsetZ;
 		
 		init();
 	}
+	
+	
+	public Border(int radiusX, int radiusZ, int offsetX, int offsetZ)
+	{
+		/*
+		this.radiusX = radiusX;
+		this.radiusZ = radiusZ;
+		this.centerX = offsetX;
+		this.centerZ = offsetZ;
+		
+		init();
+		*/
+		
+		throw new NotImplementedException("Border radiusX, radiusZ");
+	}
+	
 	
 	
 	private void init()
