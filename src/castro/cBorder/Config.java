@@ -54,7 +54,8 @@ public class Config
 	
 	public static void setBorder(String world, Border border)
 	{
-		set("worlds."+world+".radius",  border.radius);
+		set("worlds."+world+".radiusX", border.radiusX);
+		set("worlds."+world+".radiusZ", border.radiusZ);
 		set("worlds."+world+".offsetX", border.centerX);
 		set("worlds."+world+".offsetZ", border.centerZ);
 		saveConfig();
@@ -77,10 +78,22 @@ public class Config
 	
 	private static Border getBorder(String world)
 	{
-		return new Border(
-				con.getInt("worlds."+world+".radius"),
-				con.getInt("worlds."+world+".offsetX"),
-				con.getInt("worlds."+world+".offsetZ"));
+		int radiusX, radiusZ, offsetX, offsetZ;
+		radiusX = con.getInt("worlds."+world+".radiusX");
+		radiusZ = con.getInt("worlds."+world+".radiusZ");
+		offsetX = con.getInt("worlds."+world+".offsetX");
+		offsetZ = con.getInt("worlds."+world+".offsetZ");
+		
+		if(con.contains("worlds."+world+".radius"))
+		{
+			radiusX = radiusZ = con.getInt("worlds."+world+".radius");
+			con.set("worlds."+world+".radius", null);
+			Border border = new Border(radiusX, radiusZ, offsetX, offsetZ);
+			setBorder(world, border);
+			return border;
+		}
+		
+		return new Border(radiusX, radiusZ, offsetX, offsetZ);
 	}
 	
 	

@@ -31,7 +31,7 @@ public class NoBorder extends Border
 	{
 		// Minecraft is limited to 30 million blocks,
 		// so border that have 3 million chunks (48 million blocks) is big enough.
-		super(3*million, 0, 0);
+		super(3*million, 3*million, 0, 0);
 	}
 	
 	

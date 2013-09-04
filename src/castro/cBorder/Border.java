@@ -17,7 +17,6 @@
 
 package castro.cBorder;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -29,7 +28,7 @@ public class Border
 	private static boolean spigot = Bukkit.getVersion().toLowerCase().contains("spigot");
 	//private static boolean bukkit = !spigot;
 	
-	public int radius;
+	public int radiusX, radiusZ;
 	public int centerX, centerZ; // Center of the border (in chunks) from 0, 0
 	
 	int lowBlockX,
@@ -55,31 +54,22 @@ public class Border
 	
 	
 	
-	
+	/*
 	public Border(int radius, int offsetX, int offsetZ)
 	{
-		//this(radius, radius, offsetX, offsetZ);
-		// TODO: move it to Border(int, int, int, int)
-		this.radius  = radius;
-		this.centerX = offsetX;
-		this.centerZ = offsetZ;
-		
-		init();
+		this(radius, radius, offsetX, offsetZ);
 	}
+	*/
 	
 	
 	public Border(int radiusX, int radiusZ, int offsetX, int offsetZ)
 	{
-		/*
 		this.radiusX = radiusX;
 		this.radiusZ = radiusZ;
 		this.centerX = offsetX;
 		this.centerZ = offsetZ;
 		
 		init();
-		*/
-		
-		throw new NotImplementedException("Border radiusX, radiusZ");
 	}
 	
 	
@@ -87,28 +77,35 @@ public class Border
 	private void init()
 	{
 		if(spigot)
-			radius += 1;
+		{
+			radiusX += 1;
+			radiusZ += 1;
+		}
 		else
-			radius += 2;
+		{
+			radiusX += 2;
+			radiusZ += 2;
+		}
 		
 		/*
 		 * Settings chunks limit
 		 */
-		lowChunkX  = centerX - radius;
-		lowChunkZ  = centerZ - radius;
-		highChunkX = centerX + radius;
-		highChunkZ = centerZ + radius;
+		lowChunkX  = centerX - radiusX;
+		lowChunkZ  = centerZ - radiusZ;
+		highChunkX = centerX + radiusX;
+		highChunkZ = centerZ + radiusZ;
 		
 		/*
 		 * Settings blocks limit
 		 */
 		int centerBlockX  = centerX << 4;
 		int centerBlockZ  = centerZ << 4;
-		int radiusBlocks  = radius * 16;
-		lowBlockX  = centerBlockX - radiusBlocks;
-		lowBlockZ  = centerBlockZ - radiusBlocks;
-		highBlockX = centerBlockX + radiusBlocks;
-		highBlockZ = centerBlockZ + radiusBlocks;
+		int radiusBlocksX  = radiusX * 16;
+		int radiusBlocksZ  = radiusZ * 16;
+		lowBlockX  = centerBlockX - radiusBlocksX;
+		lowBlockZ  = centerBlockZ - radiusBlocksZ;
+		highBlockX = centerBlockX + radiusBlocksX;
+		highBlockZ = centerBlockZ + radiusBlocksZ;
 		
 		/*
 		 * Adjusting blocks limit due to chunk 0, 0
@@ -140,9 +137,15 @@ public class Border
 		safeHighBlockZ = highBlockZ - safeOffset;
 		
 		if(spigot)
-			radius -= 1;
+		{
+			radiusX -= 1;
+			radiusZ -= 1;
+		}
 		else
-			radius -= 2;
+		{
+			radiusX -= 2;
+			radiusZ -= 2;
+		}
 		
 		/*
 		 * Just log, debug purpose
@@ -224,7 +227,8 @@ public class Border
 		if(o instanceof Border)
 		{
 			Border border = (Border)o;
-			return radius  == border.radius
+			return radiusX == border.radiusX
+				&& radiusZ == border.radiusZ
 				&& centerX == border.centerX
 				&& centerZ == border.centerZ;
 		}

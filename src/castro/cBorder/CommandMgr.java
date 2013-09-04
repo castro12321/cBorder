@@ -71,7 +71,7 @@ public class CommandMgr implements GenericCommandMgr
 		try
 		{
 			String world = null;
-			int radius, offsetX = 0, offsetZ = 0;
+			int radiusX, radiusZ, offsetX = 0, offsetZ = 0;
 			if(player != null)
 			{
 				world = player.getWorld().getName();
@@ -89,9 +89,20 @@ public class CommandMgr implements GenericCommandMgr
 			case 4:
 				offsetX	= Integer.valueOf(args[3]);
 			case 3:
-				world	= args[2];
+				radiusX = Integer.valueOf(args[1]);
+				try
+				{
+					radiusZ = Integer.valueOf(args[2]);
+				}
+				catch(NumberFormatException e)
+				{
+					radiusZ = radiusX;
+					world = args[2];
+				}
+				
+				world = args[2];
 			case 2:
-				radius	= Integer.valueOf(args[1]);
+				radiusX = radiusZ = Integer.valueOf(args[1]);
 				break;
 			case 1:
 			case 0:
@@ -99,12 +110,13 @@ public class CommandMgr implements GenericCommandMgr
 			}
 			
 			int borderLimit = 3000000;
-			if( radius < 0			 || radius  > borderLimit
+			if(radiusX < 0			 || radiusX > borderLimit
+			|| radiusZ < 0			 || radiusZ > borderLimit
 			|| offsetX > borderLimit || offsetX < -borderLimit
 			|| offsetZ > borderLimit || offsetZ < -borderLimit)
 				return !plugin.sendMessage(sender, "You have passed illegal values");
 			
-			return setBorder(sender, world, radius, offsetX, offsetZ);
+			return setBorder(sender, world, radiusX, radiusZ, offsetX, offsetZ);
 		}
 		catch(NumberFormatException e)
 		{
@@ -153,21 +165,27 @@ public class CommandMgr implements GenericCommandMgr
 		int maxRadiusZ = maxZ - offsetZ;
 		int radiusZ = Math.max(minRadiusZ, maxRadiusZ);
 		
-		int radius = Math.max(radiusX, radiusZ);
-		
 		String world = player.getWorld().getName();
 		
-		return setBorder(sender, world, radius, offsetX, offsetZ);
+		return setBorder(sender, world, radiusX, radiusZ, offsetX, offsetZ);
 	}
 	
 	
-	private boolean setBorder(CommandSender sender, String world, int radius, int offsetX, int offsetZ)
+	private String intToStr(int val)
+	{
+		return Integer.toString(val);
+	}
+	private boolean setBorder(CommandSender sender, String world, int radiusX, int radiusZ, int offsetX, int offsetZ)
 	{
 		if(world == null)
 			return false;
 		
-		BorderMgr.setBorder(world, new Border(radius, offsetX, offsetZ));
-		return plugin.sendMessage(sender, "Created border for " + world + " with radius " + radius + " at chunk " + offsetX + ", " + offsetZ);
+		BorderMgr.setBorder(world, new Border(radiusX, radiusZ, offsetX, offsetZ));
+		String msg = "Ceated border for $world$ with radius $radX$, $radZ$ at chunk $chunkX$, $chunkZ$";
+		msg = msg.replace("$world$", world)
+			.replace("$radX$", intToStr(radiusX)).replace("$radZ$", intToStr(radiusZ))
+			.replace("$chunkX$", intToStr(offsetX)).replace("$chunkZ$", intToStr(offsetZ));
+		return plugin.sendMessage(sender, msg);
 	}
 	
 	
@@ -181,7 +199,7 @@ public class CommandMgr implements GenericCommandMgr
 		
 		plugin.sendMessage(sender, "Border info for world " + world.getName());
 		plugin.sendMessage(sender, "center: " + border.centerX + " " + border.centerZ);
-		plugin.sendMessage(sender, "radius: " + border.radius);
+		plugin.sendMessage(sender, "radius: " + border.radiusX + " " + border.radiusZ);
 		plugin.sendMessage(sender, "safe c: " + border.safeLowChunkX + " " + border.safeLowChunkZ + " - " + border.safeHighChunkX + " " + border.safeHighChunkZ);
 		
 		return true;
