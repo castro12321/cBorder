@@ -5,6 +5,7 @@ bounce: true
 protection: true
 worlds:
   exampleWorld:
-    radius: 4
+    radiusX: 4
+    radiusZ: 8
     offsetX: -1
-    offsetY: 1
+    offsetZ: 1

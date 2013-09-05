@@ -83,11 +83,15 @@ public class CommandMgr implements GenericCommandMgr
 			
 			switch(args.length)
 			{
+			// /cb set radiusX radiusZ worldname centerX centerZ
+			//     <0>   <1>     <2>       <3>      <4>    <5>
 			default:
+			case 6:
+				offsetZ	= Integer.valueOf(args[5]);
 			case 5:
-				offsetZ	= Integer.valueOf(args[4]);
+				offsetX	= Integer.valueOf(args[4]);
 			case 4:
-				offsetX	= Integer.valueOf(args[3]);
+				world = args[3];
 			case 3:
 				radiusX = Integer.valueOf(args[1]);
 				try
@@ -100,7 +104,7 @@ public class CommandMgr implements GenericCommandMgr
 					world = args[2];
 				}
 				
-				world = args[2];
+				break;
 			case 2:
 				radiusX = radiusZ = Integer.valueOf(args[1]);
 				break;
