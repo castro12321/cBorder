@@ -23,6 +23,7 @@ import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 
@@ -50,5 +51,17 @@ public class BorderListener implements Listener
 		Location newLocation = border.getSafe(to);
 		if(newLocation != null)
 			event.setRespawnLocation(newLocation);
+	}
+	
+	
+	@EventHandler
+	public void onMobSpawn(CreatureSpawnEvent event)
+	{
+		Location spawnLocation = event.getLocation();
+		Border border = BorderMgr.getBorder(spawnLocation.getWorld());
+		
+		Location newLocation = border.getSafe(spawnLocation);
+		if(newLocation != null)
+			event.setCancelled(true);
 	}
 }
