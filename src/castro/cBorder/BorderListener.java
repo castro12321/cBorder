@@ -18,10 +18,12 @@
 package castro.cBorder;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 
 
@@ -36,5 +38,17 @@ public class BorderListener implements Listener
 		Chunk chunk = event.getChunk();
 		if(border.isOutsideLimit(chunk)) // Check if chunk is beyond limit --> unload
 			chunk.unload(false, false);
+	}
+	
+	
+	@EventHandler(priority = EventPriority.HIGHEST) // We have to override MultiVerse spawning
+	public void onPlayerRespawn(PlayerRespawnEvent event)
+	{
+		Location to = event.getRespawnLocation();
+		Border border = BorderMgr.getBorder(to.getWorld());
+		
+		Location newLocation = border.getSafe(to);
+		if(newLocation != null)
+			event.setRespawnLocation(newLocation);
 	}
 }
