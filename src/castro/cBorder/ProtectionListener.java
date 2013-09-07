@@ -23,7 +23,6 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class ProtectionListener implements Listener
@@ -60,30 +59,6 @@ public class ProtectionListener implements Listener
 			block.setTypeId(Material.STATIONARY_LAVA.getId(), false);
 		else // water
 			block.setTypeId(Material.STATIONARY_WATER.getId(), false);
-	}
-	
-	
-	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event)
-	{
-		/* Disabled. Entities cleaner now handles it.
-		if(disableProtection)
-			return;
-		
-		Player player = event.getPlayer();
-		Material holded = player.getItemInHand().getType();
-		
-		switch(holded)
-		{
-		case EYE_OF_ENDER:
-		case FIREWORK:
-		case EGG:
-		case POTION:
-			if(BorderMgr.contains(player.getWorld().getName()))
-				event.setCancelled(true);
-		default:
-		}
-		*/
 	}
 	
 	
