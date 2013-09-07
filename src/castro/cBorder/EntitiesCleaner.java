@@ -44,13 +44,13 @@ public class EntitiesCleaner implements Runnable
 			
 			List<Entity> entities = world.getEntities();
 			for(Entity entity : entities)
-			{
-				if(entity.isInsideVehicle())
-					entity.leaveVehicle();
-				
+			{				
 				Location newSafe = border.getSafe(entity.getLocation());
 				if(newSafe != null)
 				{
+					if(entity.isInsideVehicle())
+						entity.leaveVehicle();
+					
 					if(entity instanceof Player)
 					{						
 						if(bounce)
