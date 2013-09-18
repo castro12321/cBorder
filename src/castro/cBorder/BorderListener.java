@@ -60,8 +60,7 @@ public class BorderListener implements Listener
 		Location spawnLocation = event.getLocation();
 		Border border = BorderMgr.getBorder(spawnLocation.getWorld());
 		
-		Location newLocation = border.getSafe(spawnLocation);
-		if(newLocation != null)
+		if(border.isNotSafe(spawnLocation.getChunk()))
 			event.setCancelled(true);
 	}
 }
