@@ -43,22 +43,15 @@ public class ProtectionListener implements Listener
 		if(border.isLastBlock(from))
 		{
 			event.setCancelled(true);
-			setStationary(from);
+			from.setType(Material.AIR);
 		}
 		
 		Block to = event.getToBlock();
 		if(border.isLastBlock(to))
 		{
 			event.setCancelled(true);
-			setStationary(to);
+			to.setType(Material.AIR);
 		}
-	}
-	private void setStationary(Block block)
-	{
-		if(block.getTypeId() > 9)
-			block.setTypeId(Material.STATIONARY_LAVA.getId(), false);
-		else // water
-			block.setTypeId(Material.STATIONARY_WATER.getId(), false);
 	}
 	
 	
