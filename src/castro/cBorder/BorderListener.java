@@ -29,7 +29,7 @@ import org.bukkit.event.world.ChunkLoadEvent;
 
 
 public class BorderListener implements Listener
-{	
+{
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onChunkLoad(ChunkLoadEvent event)
 	{

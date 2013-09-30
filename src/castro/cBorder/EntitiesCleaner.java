@@ -22,6 +22,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 
 
@@ -37,43 +38,34 @@ public class EntitiesCleaner implements Runnable
 		
 		List<World> worlds = plugin.getServer().getWorlds();
 		for(World world : worlds)
-		{
-			Border border = BorderMgr.getBorder(world);
-			if(border == null)
-				continue;
-			
-			List<Entity> entities = world.getEntities();
-			for(Entity entity : entities)
-			{				
-				Location newSafe = border.getSafe(entity.getLocation());
-				if(newSafe != null)
-				{
-					if(entity.isInsideVehicle())
-						entity.leaveVehicle();
-					
-					if(entity instanceof Player)
-					{						
-						if(bounce)
-							plugin.sendMessage((Player)entity, "&cYou have passed the border of this world");
-						else
-							continue;
-					}
-					entity.teleport(newSafe);
-				}
-			}
-			/*
-				if(!border.isSafe(entity.getLocation().getChunk()))
-					if(isBad(entity))
-						// TODO: maybe move to safe location instead of removing?
-						entity.remove();
-			*/
-		}
+			cleanWorld(world);
 	}
 	
-	/*
-	private boolean isBad(Entity entity)
+	
+	private void cleanWorld(World world)
 	{
-		return !(entity instanceof CraftPlayer);
+		Border border = BorderMgr.getBorder(world);
+		
+		List<Entity> entities = world.getEntities();
+		for(Entity entity : entities)
+		{
+			if(entity instanceof Painting)
+				continue;
+			
+			Location newSafe = border.getSafe(entity.getLocation());
+			if(newSafe != null)
+			{
+				if(entity.isInsideVehicle())
+					entity.leaveVehicle();
+				
+				if(entity instanceof Player)
+				{						
+					if(!bounce)
+						continue;
+					plugin.sendMessage((Player)entity, "&cYou have passed the border of this world");
+				}
+				entity.teleport(newSafe);
+			}
+		}
 	}
-	*/
 }
