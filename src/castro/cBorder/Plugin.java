@@ -17,19 +17,22 @@
 
 package castro.cBorder;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-
 import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
+
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 
 // TODO: Store unloaded chunks in array and then reload them after limit change
 public class Plugin extends CPlugin
 {
 	protected static Plugin instance;
+	private static CommandMgr commandMgr;
 	
 	
 	WorldEditPlugin getWorldEdit()
@@ -44,10 +47,7 @@ public class Plugin extends CPlugin
 		instance = this;
 		
 		CPluginSettings settings = new CPluginSettings();
-		
 		settings.useConfig = true;
-		settings.commandMgr = new CommandMgr();
-		
 		return settings;
 	}
 	
@@ -55,6 +55,7 @@ public class Plugin extends CPlugin
 	@Override
 	public void init()
 	{
+		commandMgr = new CommandMgr();
 		new Config();
 		
 		BorderMgr.init();
@@ -66,6 +67,13 @@ public class Plugin extends CPlugin
 		PluginManager PM = getServer().getPluginManager();
 		PM.registerEvents(new ProtectionListener(), this);
 		PM.registerEvents(new BorderListener(), this);
+	}
+	
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
+	{
+		return commandMgr.onCommand(sender, cmd, args);
 	}
 	
 	
