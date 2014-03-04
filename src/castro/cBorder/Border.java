@@ -31,7 +31,8 @@ public class Border
 	public int radiusX, radiusZ;
 	public int centerX, centerZ; // Center of the border (in chunks) from 0, 0
 	
-	int lowBlockX,
+	public int
+		lowBlockX,
 		lowBlockZ,
 		lowChunkX,
 		lowChunkZ,
