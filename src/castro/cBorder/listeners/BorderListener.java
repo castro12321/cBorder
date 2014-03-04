@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package castro.cBorder;
+package castro.cBorder.listeners;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -26,6 +26,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+
+import castro.cBorder.Border;
+import castro.cBorder.BorderMgr;
 
 
 public class BorderListener implements Listener

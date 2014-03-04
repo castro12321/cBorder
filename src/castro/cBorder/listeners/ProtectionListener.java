@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package castro.cBorder;
+package castro.cBorder.listeners;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,7 +26,13 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+
+import castro.cBorder.Border;
+import castro.cBorder.BorderMgr;
+import castro.cBorder.Config;
+import castro.cBorder.Config;
 
 public class ProtectionListener implements Listener
 {

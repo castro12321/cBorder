@@ -24,6 +24,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
+import castro.cBorder.listeners.BorderListener;
+import castro.cBorder.listeners.ProtectionListener;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
