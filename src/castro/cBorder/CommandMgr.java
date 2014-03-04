@@ -204,7 +204,8 @@ public class CommandMgr implements GenericCommandMgr
 		plugin.sendMessage(sender, "Border info for world " + world.getName());
 		plugin.sendMessage(sender, "center: " + border.centerX + " " + border.centerZ);
 		plugin.sendMessage(sender, "radius: " + border.radiusX + " " + border.radiusZ);
-		plugin.sendMessage(sender, "safe c: " + border.safeLowChunkX + " " + border.safeLowChunkZ + " - " + border.safeHighChunkX + " " + border.safeHighChunkZ);
+		plugin.sendMessage(sender, "safe chunks: " + border.safeLowChunkX + " " + border.safeLowChunkZ + " - " + border.safeHighChunkX + " " + border.safeHighChunkZ);
+		plugin.sendMessage(sender, "safe blocks: " + border.safeLowBlockX + " " + border.safeLowBlockZ + " - " + border.safeHighBlockX + " " + border.safeHighBlockZ);
 		
 		return true;
 	}
