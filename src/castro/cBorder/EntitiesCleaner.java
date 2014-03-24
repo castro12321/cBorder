@@ -22,8 +22,10 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 
 
 public class EntitiesCleaner implements Runnable
@@ -44,28 +46,37 @@ public class EntitiesCleaner implements Runnable
 	
 	private void cleanWorld(World world)
 	{
-		Border border = BorderMgr.getBorder(world);
-		
 		List<Entity> entities = world.getEntities();
 		for(Entity entity : entities)
 		{
-			if(entity instanceof Painting)
-				continue;
-			
-			Location newSafe = border.getSafe(entity.getLocation());
-			if(newSafe != null)
+			if(entity instanceof Painting
+			|| entity instanceof ItemFrame
+			|| entity instanceof Vehicle)
 			{
-				if(entity.isInsideVehicle())
-					entity.leaveVehicle();
-				
-				if(entity instanceof Player)
-				{						
-					if(!bounce)
-						continue;
-					plugin.sendMessage((Player)entity, "&cYou have passed the border of this world");
-				}
-				entity.teleport(newSafe);
+				entity.eject();  // In case entity had passengers
+				entity.remove(); // Those entities are a bit laggy so remove them
 			}
+			else
+				bounce(entity, world);
+		}
+	}
+	
+	
+	private void bounce(Entity entity, World world)
+	{
+		Border border = BorderMgr.getBorder(world);
+		Location newSafe = border.getSafe(entity.getLocation());
+		if(newSafe != null)
+		{
+			entity.leaveVehicle(); // We can't teleport entity if it's in vehicle
+			
+			if(entity instanceof Player)
+			{						
+				if(!bounce)
+					return;
+				plugin.sendMessage((Player)entity, "&cYou have passed the border of this world");
+			}
+			entity.teleport(newSafe);
 		}
 	}
 }
