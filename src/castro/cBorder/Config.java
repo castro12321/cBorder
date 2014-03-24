@@ -35,7 +35,6 @@ public class Config
 		
 		checkSet("bounce", true);
 		checkSet("protection", true);
-		saveConfig();
 	}
 	
 	
