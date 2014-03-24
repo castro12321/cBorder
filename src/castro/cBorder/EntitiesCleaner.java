@@ -22,8 +22,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Painting;
+import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 
@@ -49,8 +48,7 @@ public class EntitiesCleaner implements Runnable
 		List<Entity> entities = world.getEntities();
 		for(Entity entity : entities)
 		{
-			if(entity instanceof Painting
-			|| entity instanceof ItemFrame
+			if(entity instanceof Hanging
 			|| entity instanceof Vehicle)
 			{
 				entity.eject();  // In case entity had passengers
