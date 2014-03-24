@@ -43,6 +43,7 @@ public class Config
 	{
 		if(!con.isSet(key))
 			set(key, value);
+		saveConfig();
 	}
 	
 	
