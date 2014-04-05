@@ -36,8 +36,7 @@ import castro.cBorder.Plugin;
 
 public class WallListener implements Listener, Runnable
 {
-	private final int safeDistance    = 10;
-	private boolean disableProtection = Config.protectionDisabled();
+	private final int SAFE_DISTANCE   = 12;
 	private Set<Player> movedPlayers  = new HashSet<>();
 	private Set<Player> nearWall      = new HashSet<>();
 	private Set<Block>  walls         = new HashSet<>();
@@ -45,7 +44,7 @@ public class WallListener implements Listener, Runnable
 	
 	public WallListener(Plugin plugin)
 	{
-		plugin.scheduleSyncRepeatingTask(this, 1*20, 1*20);
+		plugin.scheduleSyncRepeatingTask(this, 1*10, 1*10);
 	}
 	
 	
@@ -67,34 +66,48 @@ public class WallListener implements Listener, Runnable
 	
 	private void addWalls()
 	{
-		for(Player player : movedPlayers)
-			if(isNearWall(player))
-				nearWall.add(player);
-		
 		for(Player player : nearWall)
-			if(isNearWall(player))
-				addWalls(player);
-			else
+			if(!addWallsIfNeeded(player))
 				nearWall.remove(player);
 		
-		movedPlayers.clear();
+		movedPlayers.removeAll(nearWall);
 		
-		for(Block block : walls)
-			block.setType(Material.GLASS);
+		for(Player player : movedPlayers)
+			if(addWallsIfNeeded(player))
+				nearWall.add(player);
+		movedPlayers.clear();
 	}
 	
 	
-	private void addWalls(Player player)
+	private boolean addWallsIfNeeded(Player player)
 	{
-		World  world  = player.getWorld();
-		Border border = BorderMgr.getBorder(world);
-		Location loc  = player.getLocation();
+		World  world   = player.getWorld();
+		Border border  = BorderMgr.getBorder(world);
+		Location loc   = player.getLocation();
 		
-		// Math.abs(lowX) - Math.abs(playerX) < minDistance ???
-		if(Math.abs(border.safeLowBlockX  + loc.getBlockX()) < safeDistance) addWallsX(world, border.safeLowBlockX , loc.getBlockY(), loc.getBlockZ());
-		if(Math.abs(border.safeLowBlockZ  + loc.getBlockZ()) < safeDistance) addWallsZ(world, loc.getBlockX()      , loc.getBlockY(), border.safeLowBlockZ);
-		if(Math.abs(border.safeHighBlockX - loc.getBlockX()) < safeDistance) addWallsX(world, border.safeHighBlockX, loc.getBlockY(), loc.getBlockZ());
-		if(Math.abs(border.safeHighBlockZ - loc.getBlockZ()) < safeDistance) addWallsZ(world, loc.getBlockX()      , loc.getBlockY(), border.safeHighBlockZ);
+		boolean createdWalls = false;
+		if(loc.getBlockX() < border.safeLowBlockX + SAFE_DISTANCE)
+		{
+			addWallsX(world, border.safeLowBlockX, loc.getBlockY(), loc.getBlockZ());
+			createdWalls = true;
+		}
+		else if(loc.getBlockX() > border.safeHighBlockX - SAFE_DISTANCE)
+		{
+			addWallsX(world, border.safeHighBlockX, loc.getBlockY(), loc.getBlockZ());
+			createdWalls = true;
+		}
+		
+		if(loc.getBlockZ() < border.safeLowBlockZ + SAFE_DISTANCE)
+		{
+			addWallsZ(world, loc.getBlockX(), loc.getBlockY(), border.safeLowBlockZ);
+			createdWalls = true;
+		}
+		else if(loc.getBlockZ() > border.safeHighBlockZ - SAFE_DISTANCE)
+		{
+			addWallsZ(world, loc.getBlockX(), loc.getBlockY(), border.safeHighBlockZ);
+			createdWalls = true;
+		}
+		return createdWalls;
 	}
 	
 	
@@ -112,13 +125,17 @@ public class WallListener implements Listener, Runnable
 	
 	private void addWalls(World world, int lowX, int lowZ, int highX, int highZ, int centerY)
 	{
-		for(int y = centerY-3; y < centerY+3; ++y)
-			for(int x = lowX; x < highX; ++x)
-				for(int z = lowZ; z < highZ; ++z)
+		for(int y = centerY-2; y <= centerY+4; ++y)
+			for(int x = lowX; x <= highX; ++x)
+				for(int z = lowZ; z <= highZ; ++z)
 				{
 					Block block = world.getBlockAt(x, y, z);
-					if(block.getType() == Material.AIR)
+					if(block.getType() == Material.AIR
+					|| block.getType() == Material.GLASS)
+					{
 						walls.add(block);
+						block.setType(Material.GLASS);
+					}
 				}
 	}
 	
@@ -126,26 +143,8 @@ public class WallListener implements Listener, Runnable
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event)
 	{
-		if(disableProtection)
+		if(Config.protectionDisabled())
 			return;
-		
 		movedPlayers.add(event.getPlayer());
-	}
-	
-	
-	private boolean isNearWall(Player player)
-	{
-		Border border = BorderMgr.getBorder(player.getWorld());
-		Location loc  = player.getLocation();
-		
-		if(Math.abs(border.safeLowBlockX  + loc.getBlockX()) < safeDistance)
-			return true;
-		if(Math.abs(border.safeLowBlockZ  + loc.getBlockZ()) < safeDistance)
-			return true;
-		if(Math.abs(border.safeHighBlockX - loc.getBlockX()) < safeDistance)
-			return true;
-		if(Math.abs(border.safeHighBlockZ - loc.getBlockZ()) < safeDistance)
-			return true;
-		return false;
 	}
 }

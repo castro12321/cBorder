@@ -1,7 +1,7 @@
 # bounce: Set to true to bounce players from border
 # protection: DEBUG ONLY. Set to false to disable protection against crashing and bugging at last chunks.
 # You shouldn't edit rest of this file. It is maintained automatically or by in-game commands
-bounce: true
+bounce: false
 protection: true
 worlds:
   exampleWorld:
