@@ -66,7 +66,8 @@ public class WallListener implements Listener, Runnable
 	
 	private void addWalls()
 	{
-		for(Player player : nearWall)
+		Set<Player> tmpNearWall = new HashSet<>(nearWall);
+		for(Player player : tmpNearWall)
 			if(!addWallsIfNeeded(player))
 				nearWall.remove(player);
 		
