@@ -45,17 +45,22 @@ public class EntitiesCleaner implements Runnable
 	
 	private void cleanWorld(World world)
 	{
+		Border border = BorderMgr.getBorder(world);
 		List<Entity> entities = world.getEntities();
 		for(Entity entity : entities)
 		{
-			if(entity instanceof Hanging
-			|| entity instanceof Vehicle)
+			Location newSafe = border.getSafe(entity.getLocation());
+			if(newSafe != null)
 			{
-				entity.eject();  // In case entity had passengers
-				entity.remove(); // Those entities are a bit laggy so remove them
+				if(entity instanceof Hanging
+				|| entity instanceof Vehicle)
+				{
+					entity.eject();  // In case entity had passengers
+					entity.remove(); // Those entities are a bit laggy so remove them
+				}
+				else
+					bounce(entity, world);
 			}
-			else
-				bounce(entity, world);
 		}
 	}
 	
