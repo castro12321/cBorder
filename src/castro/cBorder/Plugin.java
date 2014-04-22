@@ -19,8 +19,6 @@ package castro.cBorder;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
@@ -63,14 +61,10 @@ public class Plugin extends CPlugin
 		
 		BorderMgr.init();
 		
-		final int second = 20;
-		BukkitScheduler scheduler = getServer().getScheduler();
-		scheduler.scheduleSyncRepeatingTask(this, new EntitiesCleaner(), second, 1*second);
-		
-		PluginManager PM = getServer().getPluginManager();
-		PM.registerEvents(new ProtectionListener(), this);
-		PM.registerEvents(new BorderListener(), this);
-		PM.registerEvents(new WallListener(this), this);
+		scheduleSyncRepeatingTask(new EntitiesCleaner(), 20, 20);
+		registerEvents(new ProtectionListener());
+		registerEvents(new BorderListener());
+		registerEvents(new WallListener(this));
 	}
 	
 	
