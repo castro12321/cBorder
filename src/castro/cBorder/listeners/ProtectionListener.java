@@ -31,7 +31,7 @@ import castro.cBorder.Config;
 
 public class ProtectionListener implements Listener
 {
-	private boolean disableProtection = Config.protectionDisabled(); 
+	private boolean disableProtection = !Config.protection(); 
 	
 	
 	@EventHandler

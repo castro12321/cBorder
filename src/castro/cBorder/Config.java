@@ -72,7 +72,6 @@ public class Config
 	private static void set(String key, Object value)
 	{
 		con.set(key, value);
-		//worldsSection.set(key, value);
 	}
 	
 	
@@ -109,14 +108,20 @@ public class Config
 	}
 	
 	
-	public static boolean protectionDisabled()
+	public static boolean protection()
 	{
-		return !con.getBoolean("protection");
+		return con.getBoolean("protection");
 	}
 	
 	
-	public static boolean bouncePlayers()
+	public static boolean bounce()
 	{
 		return con.getBoolean("bounce");
+	}
+	
+	
+	public static boolean walls()
+	{
+		return con.getBoolean("walls");
 	}
 }

@@ -1,8 +1,12 @@
 # bounce: Set to true to bounce players from border
+# walls:  An invisible wall will be created for players being near border
 # protection: DEBUG ONLY. Set to false to disable protection against crashing and bugging at last chunks.
+# additional-safe-chunks: If you want to add some buffer chunks, do it here
 # You shouldn't edit rest of this file. It is maintained automatically or by in-game commands
-bounce: false
+bounce: true
+walls: true
 protection: true
+additional-safe-chunks: 10
 worlds:
   exampleWorld:
     radiusX: 4

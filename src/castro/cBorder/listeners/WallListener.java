@@ -144,8 +144,7 @@ public class WallListener implements Listener, Runnable
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event)
 	{
-		if(Config.protectionDisabled())
-			return;
-		movedPlayers.add(event.getPlayer());
+		if(Config.walls())
+			movedPlayers.add(event.getPlayer());
 	}
 }

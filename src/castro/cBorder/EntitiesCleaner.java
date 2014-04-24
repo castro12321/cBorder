@@ -29,12 +29,12 @@ import org.bukkit.entity.Vehicle;
 
 public class EntitiesCleaner implements Runnable
 {
-	Plugin plugin = Plugin.get();
-	boolean bounce = Config.bouncePlayers();
+	Plugin  plugin = Plugin.get();
+	boolean bounce = Config.bounce();
 	
 	public void run()
 	{
-		if(Config.protectionDisabled())
+		if(!Config.protection())
 			return;
 		
 		List<World> worlds = plugin.getServer().getWorlds();
