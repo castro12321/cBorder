@@ -118,24 +118,23 @@ public class Border
 		/*
 		 * Setting safe chunks
 		 */
-		int safeOffset = 2;
+		int safeOffsetChunks = 2;
 		if(spigot)
-			safeOffset = 1;
-		safeLowChunkX  = lowChunkX  + safeOffset;
-		safeLowChunkZ  = lowChunkZ  + safeOffset;
-		safeHighChunkX = highChunkX - safeOffset;
-		safeHighChunkZ = highChunkZ - safeOffset;
+			safeOffsetChunks = 1;
+		safeOffsetChunks += Config.additionalSafeChunks();
+		safeLowChunkX  = lowChunkX  + safeOffsetChunks;
+		safeLowChunkZ  = lowChunkZ  + safeOffsetChunks;
+		safeHighChunkX = highChunkX - safeOffsetChunks;
+		safeHighChunkZ = highChunkZ - safeOffsetChunks;
 		
 		/*
 		 * Setting safe blocks
 		 */
-		safeOffset = 32;
-		if(spigot)
-			safeOffset = 16;
-		safeLowBlockX  = lowBlockX  + safeOffset;
-		safeLowBlockZ  = lowBlockZ  + safeOffset;
-		safeHighBlockX = highBlockX - safeOffset;
-		safeHighBlockZ = highBlockZ - safeOffset;
+		int safeOffsetBlocks = safeOffsetChunks * 16;
+		safeLowBlockX  = lowBlockX  + safeOffsetBlocks;
+		safeLowBlockZ  = lowBlockZ  + safeOffsetBlocks;
+		safeHighBlockX = highBlockX - safeOffsetBlocks;
+		safeHighBlockZ = highBlockZ - safeOffsetBlocks;
 		
 		if(spigot)
 		{

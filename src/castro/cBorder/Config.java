@@ -124,4 +124,10 @@ public class Config
 	{
 		return con.getBoolean("walls");
 	}
+	
+	
+	public static int additionalSafeChunks()
+	{
+		return con.getInt("additional-safe-chunks");
+	}
 }
