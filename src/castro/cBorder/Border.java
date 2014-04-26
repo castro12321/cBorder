@@ -28,7 +28,7 @@ public class Border
 	private static boolean spigot = Bukkit.getVersion().toLowerCase().contains("spigot");
 	//private static boolean bukkit = !spigot;
 	
-	public int radiusX, radiusZ;
+	public int radiusX, radiusZ; // Radius of the map from center (in chunk)
 	public int centerX, centerZ; // Center of the border (in chunks) from 0, 0
 	
 	public int
@@ -63,12 +63,13 @@ public class Border
 	*/
 	
 	
-	public Border(int radiusX, int radiusZ, int offsetX, int offsetZ)
+	// all values are provided in chunks
+	public Border(int radiusX, int radiusZ, int centerX, int centerZ)
 	{
 		this.radiusX = radiusX;
 		this.radiusZ = radiusZ;
-		this.centerX = offsetX;
-		this.centerZ = offsetZ;
+		this.centerX = centerX;
+		this.centerZ = centerZ;
 		
 		init();
 	}
@@ -87,6 +88,8 @@ public class Border
 			radiusX += 2;
 			radiusZ += 2;
 		}
+		radiusX += Config.additionalSafeChunks();
+		radiusZ += Config.additionalSafeChunks();
 		
 		/*
 		 * Settings chunks limit
@@ -251,51 +254,4 @@ public class Border
 			return from.getWorld().getHighestBlockAt(newX, newZ).getLocation();
 		return null;
 	}
-	
-	/**
-	 * Old, do not touch. (Am I doing museum? :D)
-	 * Refactored, it was too ugly
-	 */
-	
-	/*
-	public boolean isOutsideEqualLimit(Chunk chunk)
-	{ return isOutsideLimit(chunk, -1); }
-	public boolean isOutsideLimit(Chunk chunk)
-	{ return isOutsideLimit(chunk, 0); }
-	public boolean isOutsideLimit(Chunk chunk, int limitOffset)
-	{
-		int x = chunk.getX();
-		int z = chunk.getZ();
-		
-		return isAboveLimit(x, centerX, limitOffset)
-			|| isAboveLimit(z, centerZ, limitOffset)
-			|| isBelowLimit(x, centerX, limitOffset)
-			|| isBelowLimit(z, centerZ, limitOffset);
-	}
-	*/
-	
-	
-	/**
-	 * 
-	 * @param axis - X or Z position
-	 * @param axisOffset - Center of border
-	 * @param limitOffset - Radius modifier
-	 * @return
-	 */
-	/*
-	public boolean isAboveLimit(int axis, int axisOffset, int limitOffset)
-	{
-		if(bukkit)
-			return axis > ((radius-1)+limitOffset)+axisOffset;
-		return axis > (radius+limitOffset)+axisOffset;
-	}
-	
-	
-	public boolean isBelowLimit(int axis, int axisOffset, int limitOffset)
-	{
-		if(bukkit)
-			return axis < axisOffset-((radius-1)+limitOffset);
-		return axis < axisOffset-(radius+limitOffset);
-	}
-	*/
 }
