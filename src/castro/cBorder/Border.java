@@ -28,6 +28,7 @@ public class Border
 	private static boolean spigot = Bukkit.getVersion().toLowerCase().contains("spigot");
 	//private static boolean bukkit = !spigot;
 	
+	public final int safeRadiusX, safeRadiusZ;
 	public int radiusX, radiusZ; // Radius of the map from center (in chunk)
 	public int centerX, centerZ; // Center of the border (in chunks) from 0, 0
 	
@@ -53,19 +54,11 @@ public class Border
 		safeHighChunkZ;
 	
 	
-	
-	
-	/*
-	public Border(int radius, int offsetX, int offsetZ)
-	{
-		this(radius, radius, offsetX, offsetZ);
-	}
-	*/
-	
-	
 	// all values are provided in chunks
 	public Border(int radiusX, int radiusZ, int centerX, int centerZ)
 	{
+		this.safeRadiusX = radiusX;
+		this.safeRadiusZ = radiusZ;
 		this.radiusX = radiusX;
 		this.radiusZ = radiusZ;
 		this.centerX = centerX;
@@ -73,7 +66,6 @@ public class Border
 		
 		init();
 	}
-	
 	
 	
 	private void init()
@@ -149,6 +141,8 @@ public class Border
 			radiusX -= 2;
 			radiusZ -= 2;
 		}
+		radiusX -= Config.additionalSafeChunks();
+		radiusZ -= Config.additionalSafeChunks();
 		
 		/*
 		 * Just log, debug purpose
