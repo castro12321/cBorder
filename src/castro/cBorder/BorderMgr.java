@@ -119,6 +119,6 @@ public class BorderMgr
 		player.teleport(tmpLocation);
 		
 		TeleportBack teleportBack = new TeleportBack(player, oldLocation);
-		server.getScheduler().scheduleSyncDelayedTask(plugin, teleportBack);
+		server.getScheduler().scheduleSyncDelayedTask(plugin, teleportBack, 50);
 	}
 }
