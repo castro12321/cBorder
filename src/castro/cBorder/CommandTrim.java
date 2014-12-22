@@ -27,8 +27,9 @@ public class CommandTrim implements Runnable
 		File[] worlds  = getWorldsDir().listFiles();
 		for(File world : worlds)
 			worldsToTrim.add(world.getName());
+		worldsToTrim.add(0, worldsToTrim.get(0)); // double the 0th element because it'll be removed below
 		
-		plugin.scheduleSyncRepeatingTask(this, 20, 20);
+		plugin.scheduleSyncRepeatingTask(this, 1, 1);
 		
 		return true;
 	}
@@ -43,30 +44,40 @@ public class CommandTrim implements Runnable
 		&&  com.wimbli.WorldBorder.Config.trimTask.valid())
 		{
 			plugin.log("Currently trimming " + worldsToTrim.get(0));
+			return;
 		}
 		
 		String previousWorld = worldsToTrim.remove(0);
-		plugin.log("Finished!");
+		CPlot previousPlot = PlotsMgr.get(previousWorld);
+		previousPlot.unload();
+		plugin.log("Finished! " + previousWorld);
 		
 		String nextWorld = worldsToTrim.get(0);
 		plugin.log("Preparing to trim: " + nextWorld);
 		
 		CPlot plot = PlotsMgr.get(nextWorld);
 		if(plot == null)
-			plugin.log("Cannot load plot: " + nextWorld);
+		{
+			plugin.log("[cbError] Cannot load plot: " + nextWorld);
+			plugin.sendMessage(player, "[cbError] Cannot load plot: " + nextWorld);
+			return;
+		}
 		
-		player.teleport(plot.safeSpawn());
+		plot.load();
+		if(plot.getWorld() == null)
+		{
+			plugin.log("[cbError] Cannot load world: " + nextWorld);
+			plugin.sendMessage(player, "[cbError] Cannot load world: " + nextWorld);
+			return;
+		}
+		
 		Border border = BorderMgr.getBorder(nextWorld);
-		Plugin.dispatchConsoleCommand("wb shape rectangular");
-		Plugin.dispatchConsoleCommand(
+		Plugin.dispatchCommand(player, "wb shape rectangular");
+		Plugin.dispatchCommand(player, 
 				"wb " + nextWorld + " set " + 
 				border.radiusX * 16 + " " + border.radiusZ * 16 + " " + 
 				border.centerX * 16 + " " + border.centerZ * 16);
-		Plugin.dispatchConsoleCommand("wb " + nextWorld + " trim 5000 50"); // 5000 freq, 50 padding
-		
-		CPlot previousPlot = PlotsMgr.get(previousWorld);
-		if(previousPlot.getWorld().getPlayers().size() == 0)
-			previousPlot.unload();
+		Plugin.dispatchCommand(player, "wb " + nextWorld + " trim 5000 50"); // 5000 freq, 50 padding
 	}
 	
 	private static File getWorldsDir()
