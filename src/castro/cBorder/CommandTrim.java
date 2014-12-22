@@ -7,8 +7,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import castro.cWorlds.plots.CPlot;
-import castro.cWorlds.plots.PlotsMgr;
+import castro.cWorlds.CPlot;
+import castro.cWorlds.PlotsMgr;
 
 public class CommandTrim implements Runnable
 {

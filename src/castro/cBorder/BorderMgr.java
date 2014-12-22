@@ -115,7 +115,7 @@ public class BorderMgr
 		if(tmpWorld.equals(oldLocation.getWorld()))
 			tmpWorld = server.getWorlds().get(1);
 		Location tmpLocation = tmpWorld.getSpawnLocation();
-		
+
 		player.teleport(tmpLocation);
 		
 		TeleportBack teleportBack = new TeleportBack(player, oldLocation);
