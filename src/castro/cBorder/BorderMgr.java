@@ -8,12 +8,9 @@ package castro.cBorder;
 import java.util.HashMap;
 
 import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
-import org.bukkit.entity.Player;
 
 
 public class BorderMgr
@@ -34,7 +31,7 @@ public class BorderMgr
 	private static Border fromWorldBorder(WorldBorder wb)
 	{
 		int radius = (int)Math.ceil(wb.getSize()/2);
-		return new Border(radius, radius, (int)Math.round(wb.getCenter().getX()), (int)Math.round(wb.getCenter().getX()));
+		return new Border(radius >> 4, radius >> 4, (int)Math.round(wb.getCenter().getX()) >> 4, (int)Math.round(wb.getCenter().getX()) >> 4);
 	}
 	
 	public static Border getBorder(World world)
@@ -48,7 +45,7 @@ public class BorderMgr
 			if(oldBorder != null)
 				setBorder(world, oldBorder);
 			else
-				setBorder(world, new Border(50000, 50000, (int)Math.round(wb.getCenter().getX()), (int)Math.round(wb.getCenter().getX())));
+				setBorder(world, new Border(3125, 3125, (int)Math.round(wb.getCenter().getX()) >> 4, (int)Math.round(wb.getCenter().getX()) >> 4));
 		}
 		return fromWorldBorder(wb);
 	}
@@ -61,10 +58,11 @@ public class BorderMgr
 			return;
 		
 		int size = 2 * Math.max(newBorder.radiusX, newBorder.radiusZ);
+		size *= 16; // Our size is in chunks, Mojang's is in blocks
 		if(size > 100000)
 			size = 100000;
 		wb.setSize(size);
-		wb.setCenter(newBorder.centerX, newBorder.centerZ);
+		wb.setCenter(newBorder.centerX << 4, newBorder.centerZ << 4);
 		wb.setWarningDistance(0);
 		
 		refreshChunks(world, newBorder);
@@ -78,29 +76,6 @@ public class BorderMgr
 		}
 	}
 	
-	/**
-	 * Teleports player to other map and teleports him back
-	 * @param player
-	 */
-	private static class TeleportBack implements Runnable
-	{
-		Player player;
-		Location back;
-		
-		TeleportBack(Player player, Location back)
-		{
-			this.player = player;
-			this.back = back;
-		}
-		
-		@Override
-		public void run()
-		{
-			player.teleport(back);
-		}
-	}
-	
-	
 	private static void refreshChunks(World world, Border border)
 	{
 		if(world == null)
@@ -110,26 +85,5 @@ public class BorderMgr
 		for(Chunk chunk : loadedChunks)
 			if(border.isOutsideLimit(chunk))
 				chunk.unload(true, false);
-		
-		for(Player player : world.getPlayers())
-			refreshChunks(player);
-	}
-	
-	
-	private static void refreshChunks(Player player)
-	{
-		Plugin plugin = Plugin.get();
-		Server server = plugin.getServer();
-		
-		Location oldLocation = player.getLocation();
-		World tmpWorld = server.getWorlds().get(0);
-		if(tmpWorld.equals(oldLocation.getWorld()))
-			tmpWorld = server.getWorlds().get(1);
-		Location tmpLocation = tmpWorld.getSpawnLocation();
-
-		player.teleport(tmpLocation);
-		
-		TeleportBack teleportBack = new TeleportBack(player, oldLocation);
-		server.getScheduler().scheduleSyncDelayedTask(plugin, teleportBack, 50);
 	}
 }
