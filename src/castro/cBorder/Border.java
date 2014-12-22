@@ -5,7 +5,6 @@
 
 package castro.cBorder;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -13,9 +12,6 @@ import org.bukkit.block.Block;
 
 public class Border
 {
-	private static boolean spigot = Bukkit.getVersion().toLowerCase().contains("spigot");
-	//private static boolean bukkit = !spigot;
-	
 	public final int safeRadiusX, safeRadiusZ;
 	public int radiusX, radiusZ; // Radius of the map from center (in chunk)
 	public int centerX, centerZ; // Center of the border (in chunks) from 0, 0
@@ -58,16 +54,8 @@ public class Border
 	
 	private void init()
 	{
-		if(spigot)
-		{
-			radiusX += 1;
-			radiusZ += 1;
-		}
-		else
-		{
-			radiusX += 2;
-			radiusZ += 2;
-		}
+		radiusX += 1; // Have to add at least one safe chunk. The last chunk is bugged as hell
+		radiusZ += 1; // See above
 		radiusX += Config.additionalSafeChunks();
 		radiusZ += Config.additionalSafeChunks();
 		
@@ -101,9 +89,7 @@ public class Border
 		/*
 		 * Setting safe chunks
 		 */
-		int safeOffsetChunks = 2;
-		if(spigot)
-			safeOffsetChunks = 1;
+		int safeOffsetChunks = 1; // Have to add at least one safe chunk. The last chunk is bugged as hell
 		safeOffsetChunks += Config.additionalSafeChunks();
 		safeLowChunkX  = lowChunkX  + safeOffsetChunks;
 		safeLowChunkZ  = lowChunkZ  + safeOffsetChunks;
@@ -119,22 +105,12 @@ public class Border
 		safeHighBlockX = highBlockX - safeOffsetBlocks;
 		safeHighBlockZ = highBlockZ - safeOffsetBlocks;
 		
-		if(spigot)
-		{
-			radiusX -= 1;
-			radiusZ -= 1;
-		}
-		else
-		{
-			radiusX -= 2;
-			radiusZ -= 2;
-		}
+		radiusX -= 1; // Remove the safe radius increase applied above
+		radiusZ -= 1; // See above
 		radiusX -= Config.additionalSafeChunks();
 		radiusZ -= Config.additionalSafeChunks();
 		
-		/*
-		 * Just log, debug purpose
-		 */
+		// Just log, debug purpose
 		/**
 		Plugin.instance.log("CALCULATED BORDER:");
 		Plugin.instance.log(radius + " " + centerX + " " + centerZ);

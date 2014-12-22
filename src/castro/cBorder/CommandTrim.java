@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import castro.cWorlds.CPlot;
@@ -52,32 +53,33 @@ public class CommandTrim implements Runnable
 		previousPlot.unload();
 		plugin.log("Finished! " + previousWorld);
 		
-		String nextWorld = worldsToTrim.get(0);
-		plugin.log("Preparing to trim: " + nextWorld);
+		String nextWorldName = worldsToTrim.get(0);
+		plugin.log("Preparing to trim: " + nextWorldName);
 		
-		CPlot plot = PlotsMgr.get(nextWorld);
+		CPlot plot = PlotsMgr.get(nextWorldName);
 		if(plot == null)
 		{
-			plugin.log("[cbError] Cannot load plot: " + nextWorld);
-			plugin.sendMessage(player, "[cbError] Cannot load plot: " + nextWorld);
+			plugin.log("[cbError] Cannot load plot: " + nextWorldName);
+			plugin.sendMessage(player, "[cbError] Cannot load plot: " + nextWorldName);
 			return;
 		}
 		
 		plot.load();
-		if(plot.getWorld() == null)
+		World nextWorld = plot.getWorld();
+		if(nextWorld == null)
 		{
-			plugin.log("[cbError] Cannot load world: " + nextWorld);
-			plugin.sendMessage(player, "[cbError] Cannot load world: " + nextWorld);
+			plugin.log("[cbError] Cannot load world: " + nextWorldName);
+			plugin.sendMessage(player, "[cbError] Cannot load world: " + nextWorldName);
 			return;
 		}
 		
 		Border border = BorderMgr.getBorder(nextWorld);
 		Plugin.dispatchCommand(player, "wb shape rectangular");
 		Plugin.dispatchCommand(player, 
-				"wb " + nextWorld + " set " + 
+				"wb " + nextWorldName + " set " + 
 				border.radiusX * 16 + " " + border.radiusZ * 16 + " " + 
 				border.centerX * 16 + " " + border.centerZ * 16);
-		Plugin.dispatchCommand(player, "wb " + nextWorld + " trim 5000 50"); // 5000 freq, 50 padding
+		Plugin.dispatchCommand(player, "wb " + nextWorldName + " trim 5000 50"); // 5000 freq, 50 padding
 	}
 	
 	private static File getWorldsDir()

@@ -5,6 +5,7 @@
 
 package castro.cBorder;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -121,10 +122,12 @@ public class CommandMgr implements GenericCommandMgr
 	
 	private boolean remove()
 	{
-		String target = player.getWorld().getName();
+		World target = player.getWorld();
 		if(args.length > 1)
-			target = args[1];
-		BorderMgr.removeBorder(target);
+			target = Bukkit.getWorld(args[1]);
+		if(target == null)
+			return false;
+		BorderMgr.setBorder(target, new Border(3125, 3125, 0, 0));
 		return plugin.sendMessage(sender, "Removed border for " + target);
 	}
 	
@@ -168,14 +171,17 @@ public class CommandMgr implements GenericCommandMgr
 	{
 		return Integer.toString(val);
 	}
-	private boolean setBorder(CommandSender sender, String world, int radiusX, int radiusZ, int offsetX, int offsetZ)
+	private boolean setBorder(CommandSender sender, String worldname, int radiusX, int radiusZ, int offsetX, int offsetZ)
 	{
+		if(worldname == null)
+			return false;
+		World world = Bukkit.getWorld(worldname);
 		if(world == null)
 			return false;
 		
 		BorderMgr.setBorder(world, new Border(radiusX, radiusZ, offsetX, offsetZ));
 		String msg = "Ceated border for $world$ with radius $radX$, $radZ$ at chunk $chunkX$, $chunkZ$";
-		msg = msg.replace("$world$", world)
+		msg = msg.replace("$world$", worldname)
 			.replace("$radX$", intToStr(radiusX)).replace("$radZ$", intToStr(radiusZ))
 			.replace("$chunkX$", intToStr(offsetX)).replace("$chunkZ$", intToStr(offsetZ));
 		return plugin.sendMessage(sender, msg);

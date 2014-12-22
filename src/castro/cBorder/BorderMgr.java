@@ -11,60 +11,72 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
 import org.bukkit.entity.Player;
 
 
 public class BorderMgr
 {
 	private static HashMap<String, Border> limits = new HashMap<String, Border>();
-	private static Border noBorder = new NoBorder();
 	
 	public static void init()
 	{
 		limits = Config.getAllBorders();
 	}
 	
-	
-	public static boolean contains(String world)
+	private static WorldBorder getBorderFromWorld(World world)
 	{
-		return limits.containsKey(world);
+		CraftWorld cw = (CraftWorld)world;
+		return cw.getWorldBorder();
 	}
 	
+	private static Border fromWorldBorder(WorldBorder wb)
+	{
+		int radius = (int)Math.ceil(wb.getSize()/2);
+		return new Border(radius, radius, (int)Math.round(wb.getCenter().getX()), (int)Math.round(wb.getCenter().getX()));
+	}
 	
 	public static Border getBorder(World world)
-	{ return getBorder(world.getName()); }
-	public static Border getBorder(String world)
 	{
-		Border border = limits.get(world);
-		if(border == null)
-			return noBorder;
-		return border;
+		if(world == null)
+			return null;
+		WorldBorder wb = getBorderFromWorld(world);
+		if(wb.getSize() > 100001.d)
+		{
+			Border oldBorder = limits.get(world.getName());
+			if(oldBorder != null)
+				setBorder(world, oldBorder);
+			else
+				setBorder(world, new Border(50000, 50000, (int)Math.round(wb.getCenter().getX()), (int)Math.round(wb.getCenter().getX())));
+		}
+		return fromWorldBorder(wb);
 	}
 	
-	
-	public static void setBorder(String worldname, Border newBorder)
-	{		
-		if(newBorder.equals(getBorder(worldname)))
+	public static void setBorder(World world, Border newBorder)
+	{
+		WorldBorder wb = getBorderFromWorld(world);
+		Border oldBorder = fromWorldBorder(wb);
+		if(newBorder.equals(oldBorder))
 			return;
 		
-		Config.setBorder(worldname, newBorder);
-		limits.put(worldname, newBorder);
+		int size = 2 * Math.max(newBorder.radiusX, newBorder.radiusZ);
+		if(size > 100000)
+			size = 100000;
+		wb.setSize(size);
+		wb.setCenter(newBorder.centerX, newBorder.centerZ);
+		wb.setWarningDistance(0);
 		
-		refreshChunks(worldname, newBorder);
-	}
-	
-	
-	public static void removeBorder(String worldname)
-	{
+		refreshChunks(world, newBorder);
+		
+		// TODO: remove later
+		String worldname = world.getName();
 		if(limits.containsKey(worldname))
 		{
 			limits.remove(worldname);
 			Config.removeWorld(worldname);
 		}
-		
-		refreshChunks(worldname, noBorder);
 	}
-	
 	
 	/**
 	 * Teleports player to other map and teleports him back
@@ -89,9 +101,8 @@ public class BorderMgr
 	}
 	
 	
-	private static void refreshChunks(String worldname, Border border)
+	private static void refreshChunks(World world, Border border)
 	{
-		World world = Plugin.get().getServer().getWorld(worldname);
 		if(world == null)
 			return;
 		

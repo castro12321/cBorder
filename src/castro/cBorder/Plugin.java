@@ -12,12 +12,9 @@ import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
 import castro.cBorder.listeners.BorderListener;
 import castro.cBorder.listeners.ProtectionListener;
-import castro.cBorder.listeners.WallListener;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
-
-// TODO: Store unloaded chunks in array and then reload them after limit change
 public class Plugin extends CPlugin
 {
 	protected static Plugin instance;
@@ -52,7 +49,6 @@ public class Plugin extends CPlugin
 		scheduleSyncRepeatingTask(new EntitiesCleaner(), 20, 20);
 		registerEvents(new ProtectionListener());
 		registerEvents(new BorderListener());
-		registerEvents(new WallListener(this));
 	}
 	
 	

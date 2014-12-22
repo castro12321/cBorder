@@ -15,7 +15,6 @@ public class Config
 	protected static Plugin plugin;// = Plugin.get();
 	private static FileConfiguration con;// = plugin.getConfig();
 	
-	
 	public Config()
 	{
 		plugin = Plugin.get();
@@ -25,7 +24,6 @@ public class Config
 		checkSet("protection", true);
 	}
 	
-	
 	private void checkSet(String key, Object value)
 	{
 		if(!con.isSet(key))
@@ -33,22 +31,10 @@ public class Config
 		saveConfig();
 	}
 	
-	
 	public static void saveConfig()
 	{
 		plugin.saveConfig();
 	}
-	
-	
-	public static void setBorder(String world, Border border)
-	{
-		set("worlds."+world+".radiusX", border.radiusX);
-		set("worlds."+world+".radiusZ", border.radiusZ);
-		set("worlds."+world+".offsetX", border.centerX);
-		set("worlds."+world+".offsetZ", border.centerZ);
-		saveConfig();
-	}
-	
 	
 	public static void removeWorld(String world)
 	{
@@ -56,12 +42,10 @@ public class Config
 		saveConfig();
 	}
 	
-	
 	private static void set(String key, Object value)
 	{
 		con.set(key, value);
 	}
-	
 	
 	private static Border getBorder(String world)
 	{
@@ -74,15 +58,11 @@ public class Config
 		if(con.contains("worlds."+world+".radius"))
 		{
 			radiusX = radiusZ = con.getInt("worlds."+world+".radius");
-			con.set("worlds."+world+".radius", null);
-			Border border = new Border(radiusX, radiusZ, offsetX, offsetZ);
-			setBorder(world, border);
-			return border;
+			return new Border(radiusX, radiusZ, offsetX, offsetZ);
 		}
 		
 		return new Border(radiusX, radiusZ, offsetX, offsetZ);
 	}
-	
 	
 	public static HashMap<String, Border> getAllBorders()
 	{
@@ -95,24 +75,15 @@ public class Config
 		return borders;
 	}
 	
-	
 	public static boolean protection()
 	{
 		return con.getBoolean("protection");
 	}
 	
-	
 	public static boolean bounce()
 	{
 		return con.getBoolean("bounce");
 	}
-	
-	
-	public static boolean walls()
-	{
-		return con.getBoolean("walls");
-	}
-	
 	
 	public static int additionalSafeChunks()
 	{
