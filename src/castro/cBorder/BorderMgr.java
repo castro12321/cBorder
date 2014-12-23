@@ -61,7 +61,8 @@ public class BorderMgr
 	
 	public static void setNewBorder(World world, double size, double centerX, double centerZ)
 	{
-		Plugin.get().log("snb1 " + size + "; " + centerX + "; " + centerZ);
+		if(size > 100000.d)
+			size = 100000.d;
 		
 		WorldBorder wb = getBorderFromWorld(world);
 		// Change only if there is difference
@@ -70,10 +71,8 @@ public class BorderMgr
 		&& wb.getCenter().getZ() == centerZ)
 			return;
 		
-		Plugin.get().log("snb2");
 		setBorderImpl(wb, size, centerX, centerZ);
 		
-		Plugin.get().log("snb3");
 		Config.removeWorld(world.getName()); // TODO: remove later
 	}
 	
