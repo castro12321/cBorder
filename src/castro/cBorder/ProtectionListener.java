@@ -3,7 +3,7 @@
 
  */
 
-package castro.cBorder.listeners;
+package castro.cBorder;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,11 +13,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-
-import castro.cBorder.Border;
-import castro.cBorder.BorderMgr;
 
 public class ProtectionListener implements Listener
 {
@@ -50,7 +48,7 @@ public class ProtectionListener implements Listener
 		World toWorld = to.getWorld();
 		Border border = BorderMgr.getNewBorder(toWorld);
 		if(border.isOutside(to))
-			event.setTo(border.getCenter());
+			event.setTo(border.getCenterHighest());
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST) // We have to override MultiVerse spawning
@@ -60,6 +58,15 @@ public class ProtectionListener implements Listener
 		World toWorld = to.getWorld();
 		Border border = BorderMgr.getNewBorder(toWorld);
 		if(border.isOutside(to))
-			event.setRespawnLocation(border.getCenter());
+			event.setRespawnLocation(border.getCenterHighest());
+	}
+	
+	@EventHandler
+	public void onExplosion(EntityExplodeEvent event)
+	{
+		Location loc = event.getLocation();
+		Border border = BorderMgr.getNewBorder(loc.getWorld());
+		if(border.isOutside(loc))
+			event.setCancelled(true);
 	}
 }

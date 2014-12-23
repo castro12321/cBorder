@@ -48,8 +48,8 @@ public class CommandMgr implements GenericCommandMgr
 			return remove();
 		if(action.equals("selected"))
 			return selected();
-		//if(action.equals("info"))
-			//return info();
+		if(action.equals("info"))
+			return info();
 		if(action.equals("trimallworlds"))
 			return new CommandTrim(player).runCommand();
 		return false;
@@ -77,16 +77,15 @@ public class CommandMgr implements GenericCommandMgr
 			// /cb set radiusX radiusZ worldname centerX centerZ
 			//     <0>   <1>     <2>       <3>      <4>    <5>
 			default:
-			case 4:
+			case 5:
 				offsetZ	= Integer.valueOf(args[4]);
-			case 3:
+			case 4:
 				offsetX	= Integer.valueOf(args[3]);
-			case 2:
+			case 3:
 				size = Integer.valueOf(args[1]);
 				world = args[2];
-				
 				break;
-			case 1:
+			case 2:
 				size = Integer.valueOf(args[1]);
 				break;
 			case 0:
@@ -164,7 +163,7 @@ public class CommandMgr implements GenericCommandMgr
 			.replace("$offsetX$", doubleToStr(offsetX)).replace("$offsetZ$", doubleToStr(offsetZ));
 		return plugin.sendMessage(sender, msg);
 	}
-	/*
+	
 	private boolean info()
 	{
 		if(player == null)
@@ -174,12 +173,9 @@ public class CommandMgr implements GenericCommandMgr
 		Border border = BorderMgr.getNewBorder(world);
 		
 		plugin.sendMessage(sender, "Border info for world " + world.getName());
-		plugin.sendMessage(sender, "center: " + border.centerX + " " + border.centerZ);
-		plugin.sendMessage(sender, "radius: " + border.radiusX + " " + border.radiusZ);
-		plugin.sendMessage(sender, "safe chunks: " + border.safeLowChunkX + " " + border.safeLowChunkZ + " - " + border.safeHighChunkX + " " + border.safeHighChunkZ);
-		plugin.sendMessage(sender, "safe blocks: " + border.safeLowBlockX + " " + border.safeLowBlockZ + " - " + border.safeHighBlockX + " " + border.safeHighBlockZ);
+		plugin.sendMessage(sender, "center: " + border.getCenterX() + " " + border.getCenterZ());
+		plugin.sendMessage(sender, "size: " + border.getSize());
 		
 		return true;
 	}
-	*/
 }

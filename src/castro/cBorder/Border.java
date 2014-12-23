@@ -7,40 +7,51 @@ package castro.cBorder;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R1.CraftWorldBorder;
 
 
 public class Border
 {
-	private final CraftWorldBorder handle;
-	private final net.minecraft.server.v1_8_R1.WorldBorder nmsHandle;
+	private final WorldBorder handle;
+	//private final net.minecraft.server.v1_8_R1.WorldBorder nmsHandle;
 	
 	public Border(World world)
 	{
 		CraftWorld cw = (CraftWorld)world;
-		this.handle = (CraftWorldBorder)cw.getWorldBorder();
-		this.nmsHandle = cw.getHandle().af();
+		this.handle = cw.getWorldBorder();
+		//this.nmsHandle = cw.getHandle().af();
 	}
 	
-	public boolean isInside2(Location loc)
+	public boolean isInside(Location loc)
 	{
-		return nmsHandle.isInBounds(loc.getBlockX(), loc.getBlockZ());
+		return isInside(loc.getBlockX(), loc.getBlockZ());
 	}
 	
-	public boolean isInside2(int x, int z)
+	public boolean isInside(int x, int z)
 	{
-		return nmsHandle.isInBounds(x, z);
+		Location center = getCenter();
+		final int centerX = center.getBlockX();
+		final int centerZ = center.getBlockZ();
+		final int radius = 8 + (getSize() / 2);
+		
+		return
+		   x < centerX + radius
+		&& x > centerX - radius
+		&& z < centerZ + radius
+		&& z > centerZ - radius;
+		
+		//return nmsHandle.isInBounds(x >> 4, z >> 4);
 	}
 	
 	public boolean isOutside(Location loc)
 	{
-		return !nmsHandle.isInBounds(loc.getBlockX(), loc.getBlockZ()); 
+		return !isInside(loc); 
 	}
 	
 	public boolean isOutside(int x, int z)
 	{
-		return !nmsHandle.isInBounds(x, z);
+		return !isInside(x, z);
 	}
 	
 	public int getSize()
@@ -61,5 +72,12 @@ public class Border
 	public Location getCenter()
 	{
 		return handle.getCenter();
+	}
+	
+	public Location getCenterHighest()
+	{
+		Location center = getCenter();
+		World world = center.getWorld();
+		return new Location(world, center.getBlockX(), world.getHighestBlockYAt(center), center.getBlockZ());
 	}
 }

@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 
 import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
-import castro.cBorder.listeners.ProtectionListener;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
@@ -40,7 +39,7 @@ public class Plugin extends CPlugin
 		commandMgr = new CommandMgr();
 		new Config();
 		
-		scheduleSyncRepeatingTask(new EntitiesCleaner(), 20, 20);
+		scheduleSyncRepeatingTask(new EntitiesCleaner(), 100, 100);
 		registerEvents(new ProtectionListener());
 	}
 	

@@ -35,7 +35,7 @@ public class EntitiesCleaner implements Runnable
 				if(entity instanceof Player)
 				{
 					Player player = (Player)entity;
-					player.teleport(border.getCenter());
+					player.teleport(border.getCenterHighest());
 					plugin.sendMessage(player, "&cYou have passed the border of this world");
 				}
 				else

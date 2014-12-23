@@ -5,12 +5,26 @@
 
 package castro.cBorder;
 
+import java.util.HashMap;
+
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
 
 public class BorderMgr
 {
+	private static HashMap<String, Border> borderCache = new HashMap<>();
+	
+	static void init(Plugin plugin)
+	{
+		// clear cache every 10 minutes
+		plugin.scheduleSyncRepeatingTask(new Runnable()
+		{
+			@Override public void run() { borderCache.clear(); }
+		}
+		, 600*20, 600*20);
+	}
+	
 	private static WorldBorder getBorderFromWorld(World world)
 	{
 		CraftWorld cw = (CraftWorld)world;
@@ -21,34 +35,45 @@ public class BorderMgr
 	{
 		if(world == null)
 			return null;
+		String worldName = world.getName();
+		Border cached = borderCache.get(worldName);
+		if(cached != null)
+			return cached;
+		
 		WorldBorder wb = getBorderFromWorld(world);
 		
 		// Check if we had a border from previous cBorder version
-		OldBorder oldBorder = Config.getOldBorder(world.getName());
+		OldBorder oldBorder = Config.getOldBorder(worldName);
 		if(oldBorder != null)
+		{
 			setBorderImpl(wb, oldBorder.size, oldBorder.centerX, oldBorder.centerZ);
-		else
-			setBorderImpl(wb, 100000, wb.getCenter().getX(), wb.getCenter().getZ());
+			Config.removeWorld(worldName);
+		}
 		
 		// Disallow too big worlds 100k blocks is really more than enough
 		if(wb.getSize() > 100000.d)
 			setBorderImpl(wb, 100000, wb.getCenter().getX(), wb.getCenter().getZ());
 		
-		return new Border(world);
+		Border border = new Border(world);
+		borderCache.put(worldName, border);
+		return border;
 	}
 	
 	public static void setNewBorder(World world, double size, double centerX, double centerZ)
 	{
-		WorldBorder wb = getBorderFromWorld(world);
+		Plugin.get().log("snb1 " + size + "; " + centerX + "; " + centerZ);
 		
+		WorldBorder wb = getBorderFromWorld(world);
 		// Change only if there is difference
 		if(wb.getSize() == size
 		&& wb.getCenter().getX() == centerX
 		&& wb.getCenter().getZ() == centerZ)
 			return;
 		
+		Plugin.get().log("snb2");
 		setBorderImpl(wb, size, centerX, centerZ);
 		
+		Plugin.get().log("snb3");
 		Config.removeWorld(world.getName()); // TODO: remove later
 	}
 	
