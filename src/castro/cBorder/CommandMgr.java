@@ -74,8 +74,8 @@ public class CommandMgr implements GenericCommandMgr
 			
 			switch(args.length)
 			{
-			// /cb set radiusX radiusZ worldname centerX centerZ
-			//     <0>   <1>     <2>       <3>      <4>    <5>
+			// /cb set size worldname centerX centerZ
+			//     <0>  <1>   <2>       <3>     <4>
 			default:
 			case 5:
 				offsetZ	= Integer.valueOf(args[4]);

@@ -7,9 +7,12 @@ package castro.cBorder;
 
 import java.util.HashMap;
 
+import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
+import org.bukkit.entity.Player;
 
 public class BorderMgr
 {
@@ -73,6 +76,9 @@ public class BorderMgr
 		
 		setBorderImpl(wb, size, centerX, centerZ);
 		
+		for(Player player : world.getPlayers())
+			refreshChunks(player);
+		
 		Config.removeWorld(world.getName()); // TODO: remove later
 	}
 	
@@ -81,5 +87,44 @@ public class BorderMgr
 		wb.setSize(size);
 		wb.setCenter(centerX, centerZ);
 		wb.setWarningDistance(0);
+	}
+	
+	/**
+	 * Teleports player to other map and teleports him back
+	 * @param player
+	 */
+	private static class TeleportBack implements Runnable
+	{
+		Player player;
+		Location back;
+		
+		TeleportBack(Player player, Location back)
+		{
+			this.player = player;
+			this.back = back;
+		}
+		
+		@Override
+		public void run()
+		{
+			player.teleport(back);
+		}
+	}
+	
+	private static void refreshChunks(Player player)
+	{
+		Plugin plugin = Plugin.get();
+		Server server = plugin.getServer();
+		
+		Location oldLocation = player.getLocation();
+		World tmpWorld = server.getWorlds().get(0);
+		if(tmpWorld.equals(oldLocation.getWorld()))
+			tmpWorld = server.getWorlds().get(1);
+		Location tmpLocation = tmpWorld.getSpawnLocation();
+		
+		player.teleport(tmpLocation);
+		
+		TeleportBack teleportBack = new TeleportBack(player, oldLocation);
+		server.getScheduler().scheduleSyncDelayedTask(plugin, teleportBack, 50);
 	}
 }

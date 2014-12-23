@@ -33,7 +33,7 @@ public class Border
 		Location center = getCenter();
 		final int centerX = center.getBlockX();
 		final int centerZ = center.getBlockZ();
-		final int radius = 8 + (getSize() / 2);
+		final int radius = 2 + (getSize() / 2);
 		
 		return
 		   x < centerX + radius
