@@ -5,85 +5,57 @@
 
 package castro.cBorder;
 
-import java.util.HashMap;
-
-import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
 
-
 public class BorderMgr
 {
-	private static HashMap<String, Border> limits = new HashMap<String, Border>();
-	
-	public static void init()
-	{
-		limits = Config.getAllBorders();
-	}
-	
 	private static WorldBorder getBorderFromWorld(World world)
 	{
 		CraftWorld cw = (CraftWorld)world;
 		return cw.getWorldBorder();
 	}
 	
-	private static Border fromWorldBorder(WorldBorder wb)
-	{
-		int radius = (int)Math.ceil(wb.getSize()/2);
-		return new Border(radius >> 4, radius >> 4, (int)Math.round(wb.getCenter().getX()) >> 4, (int)Math.round(wb.getCenter().getX()) >> 4);
-	}
-	
-	public static Border getBorder(World world)
+	public static Border getNewBorder(World world)
 	{
 		if(world == null)
 			return null;
 		WorldBorder wb = getBorderFromWorld(world);
-		if(wb.getSize() > 100001.d)
-		{
-			Border oldBorder = limits.get(world.getName());
-			if(oldBorder != null)
-				setBorder(world, oldBorder);
-			else
-				setBorder(world, new Border(3125, 3125, (int)Math.round(wb.getCenter().getX()) >> 4, (int)Math.round(wb.getCenter().getX()) >> 4));
-		}
-		return fromWorldBorder(wb);
+		
+		// Check if we had a border from previous cBorder version
+		OldBorder oldBorder = Config.getOldBorder(world.getName());
+		if(oldBorder != null)
+			setBorderImpl(wb, oldBorder.size, oldBorder.centerX, oldBorder.centerZ);
+		else
+			setBorderImpl(wb, 100000, wb.getCenter().getX(), wb.getCenter().getZ());
+		
+		// Disallow too big worlds 100k blocks is really more than enough
+		if(wb.getSize() > 100000.d)
+			setBorderImpl(wb, 100000, wb.getCenter().getX(), wb.getCenter().getZ());
+		
+		return new Border(world);
 	}
 	
-	public static void setBorder(World world, Border newBorder)
+	public static void setNewBorder(World world, double size, double centerX, double centerZ)
 	{
 		WorldBorder wb = getBorderFromWorld(world);
-		Border oldBorder = fromWorldBorder(wb);
-		if(newBorder.equals(oldBorder))
+		
+		// Change only if there is difference
+		if(wb.getSize() == size
+		&& wb.getCenter().getX() == centerX
+		&& wb.getCenter().getZ() == centerZ)
 			return;
 		
-		int size = 2 * Math.max(newBorder.radiusX, newBorder.radiusZ);
-		size *= 16; // Our size is in chunks, Mojang's is in blocks
-		if(size > 100000)
-			size = 100000;
-		wb.setSize(size);
-		wb.setCenter(newBorder.centerX << 4, newBorder.centerZ << 4);
-		wb.setWarningDistance(0);
+		setBorderImpl(wb, size, centerX, centerZ);
 		
-		refreshChunks(world, newBorder);
-		
-		// TODO: remove later
-		String worldname = world.getName();
-		if(limits.containsKey(worldname))
-		{
-			limits.remove(worldname);
-			Config.removeWorld(worldname);
-		}
+		Config.removeWorld(world.getName()); // TODO: remove later
 	}
 	
-	private static void refreshChunks(World world, Border border)
+	private static void setBorderImpl(WorldBorder wb, double size, double centerX, double centerZ)
 	{
-		if(world == null)
-			return;
-		
-		Chunk[] loadedChunks = world.getLoadedChunks();
-		for(Chunk chunk : loadedChunks)
-			if(border.isOutsideLimit(chunk))
-				chunk.unload(true, false);
+		wb.setSize(size);
+		wb.setCenter(centerX, centerZ);
+		wb.setWarningDistance(0);
 	}
 }

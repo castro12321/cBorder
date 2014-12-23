@@ -48,8 +48,8 @@ public class CommandMgr implements GenericCommandMgr
 			return remove();
 		if(action.equals("selected"))
 			return selected();
-		if(action.equals("info"))
-			return info();
+		//if(action.equals("info"))
+			//return info();
 		if(action.equals("trimallworlds"))
 			return new CommandTrim(player).runCommand();
 		return false;
@@ -62,7 +62,7 @@ public class CommandMgr implements GenericCommandMgr
 		try
 		{
 			String world = null;
-			int radiusX, radiusZ, offsetX = 0, offsetZ = 0;
+			int size, offsetX = 0, offsetZ = 0;
 			if(player != null)
 			{
 				world = player.getWorld().getName();
@@ -77,41 +77,32 @@ public class CommandMgr implements GenericCommandMgr
 			// /cb set radiusX radiusZ worldname centerX centerZ
 			//     <0>   <1>     <2>       <3>      <4>    <5>
 			default:
-			case 6:
-				offsetZ	= Integer.valueOf(args[5]);
-			case 5:
-				offsetX	= Integer.valueOf(args[4]);
 			case 4:
-				world = args[3];
+				offsetZ	= Integer.valueOf(args[4]);
 			case 3:
-				radiusX = Integer.valueOf(args[1]);
-				try
-				{
-					radiusZ = Integer.valueOf(args[2]);
-				}
-				catch(NumberFormatException e)
-				{
-					radiusZ = radiusX;
-					world = args[2];
-				}
+				offsetX	= Integer.valueOf(args[3]);
+			case 2:
+				size = Integer.valueOf(args[1]);
+				world = args[2];
 				
 				break;
-			case 2:
-				radiusX = radiusZ = Integer.valueOf(args[1]);
-				break;
 			case 1:
+				size = Integer.valueOf(args[1]);
+				break;
 			case 0:
 				return !plugin.sendMessage(sender, "You have passed not enough parameters");
 			}
 			
-			int borderLimit = 3000000;
-			if(radiusX < 0			 || radiusX > borderLimit
-			|| radiusZ < 0			 || radiusZ > borderLimit
+			int borderLimit = 100000;
+			if(size < 0 || size > borderLimit
 			|| offsetX > borderLimit || offsetX < -borderLimit
 			|| offsetZ > borderLimit || offsetZ < -borderLimit)
 				return !plugin.sendMessage(sender, "You have passed illegal values");
 			
-			return setBorder(sender, world, radiusX, radiusZ, offsetX, offsetZ);
+			World w = Bukkit.getWorld(world);
+			if(w == null)
+				return false;
+			return setBorder(sender, w, size, offsetX, offsetZ);
 		}
 		catch(NumberFormatException e)
 		{
@@ -127,7 +118,7 @@ public class CommandMgr implements GenericCommandMgr
 			target = Bukkit.getWorld(args[1]);
 		if(target == null)
 			return false;
-		BorderMgr.setBorder(target, new Border(3125, 3125, 0, 0));
+		BorderMgr.setNewBorder(target, 100000, 0, 0);
 		return plugin.sendMessage(sender, "Removed border for " + target);
 	}
 	
@@ -145,56 +136,42 @@ public class CommandMgr implements GenericCommandMgr
 		Location min = selection.getMinimumPoint();
 		Location max = selection.getMaximumPoint();
 		
-		Chunk minChunk = min.getChunk();
-		Chunk maxChunk = max.getChunk();
+		World world = player.getWorld();
+		Location minX = new Location(world, min.getX(), 0, 0);
+		Location maxX = new Location(world, max.getX(), 0, 0);
+		Location minZ = new Location(world, 0, 0, min.getZ());
+		Location maxZ = new Location(world, 0, 0, max.getZ());
+		double sizeX = minX.distance(maxX);
+		double sizeZ = minZ.distance(maxZ);
+		double size = Math.max(sizeX, sizeZ);
 		
-		int minX = minChunk.getX();
-		int maxX = maxChunk.getX();
-		int offsetX = (minX + maxX) / 2;
-		int minRadiusX = offsetX - minX;
-		int maxRadiusX = maxX - offsetX;
-		int radiusX = Math.max(minRadiusX, maxRadiusX);
-		
-		int minZ = minChunk.getZ();
-		int maxZ = maxChunk.getZ();
-		int offsetZ = (minZ + maxZ) / 2;
-		int minRadiusZ = offsetZ - minZ;
-		int maxRadiusZ = maxZ - offsetZ;
-		int radiusZ = Math.max(minRadiusZ, maxRadiusZ);
-		
-		String world = player.getWorld().getName();
-		
-		return setBorder(sender, world, radiusX, radiusZ, offsetX, offsetZ);
+		return setBorder(sender, world, size, min.getX() + sizeX/2, min.getZ() + sizeZ/2);
 	}
 	
-	private String intToStr(int val)
+	private String doubleToStr(double val)
 	{
-		return Integer.toString(val);
+		return Double.toString(val);
 	}
-	private boolean setBorder(CommandSender sender, String worldname, int radiusX, int radiusZ, int offsetX, int offsetZ)
+	private boolean setBorder(CommandSender sender, World world, double size, double offsetX, double offsetZ)
 	{
-		if(worldname == null)
-			return false;
-		World world = Bukkit.getWorld(worldname);
 		if(world == null)
 			return false;
 		
-		BorderMgr.setBorder(world, new Border(radiusX, radiusZ, offsetX, offsetZ));
-		String msg = "Ceated border for $world$ with radius $radX$, $radZ$ at chunk $chunkX$, $chunkZ$";
-		msg = msg.replace("$world$", worldname)
-			.replace("$radX$", intToStr(radiusX)).replace("$radZ$", intToStr(radiusZ))
-			.replace("$chunkX$", intToStr(offsetX)).replace("$chunkZ$", intToStr(offsetZ));
+		BorderMgr.setNewBorder(world, size, offsetX, offsetZ);
+		String msg = "Ceated border for $world$ with size $size$ centered at $offsetX$, $offsetZ$";
+		msg = msg.replace("$world$", world.getName())
+			.replace("$radX$", doubleToStr(size))
+			.replace("$offsetX$", doubleToStr(offsetX)).replace("$offsetZ$", doubleToStr(offsetZ));
 		return plugin.sendMessage(sender, msg);
 	}
-	
-	
+	/*
 	private boolean info()
 	{
 		if(player == null)
 			return false;
 		
 		World world	= player.getWorld();
-		Border border = BorderMgr.getBorder(world);
+		Border border = BorderMgr.getNewBorder(world);
 		
 		plugin.sendMessage(sender, "Border info for world " + world.getName());
 		plugin.sendMessage(sender, "center: " + border.centerX + " " + border.centerZ);
@@ -204,4 +181,5 @@ public class CommandMgr implements GenericCommandMgr
 		
 		return true;
 	}
+	*/
 }

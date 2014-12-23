@@ -5,211 +5,61 @@
 
 package castro.cBorder;
 
-import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
+import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorldBorder;
 
 
 public class Border
 {
-	public final int safeRadiusX, safeRadiusZ;
-	public int radiusX, radiusZ; // Radius of the map from center (in chunk)
-	public int centerX, centerZ; // Center of the border (in chunks) from 0, 0
+	private final CraftWorldBorder handle;
+	private final net.minecraft.server.v1_8_R1.WorldBorder nmsHandle;
 	
-	public int
-		lowBlockX,
-		lowBlockZ,
-		lowChunkX,
-		lowChunkZ,
-		
-		highBlockX,
-		highBlockZ,
-		highChunkX,
-		highChunkZ,
-		
-		safeLowBlockX,
-		safeLowBlockZ,
-		safeLowChunkX,
-		safeLowChunkZ,
-	
-		safeHighBlockX,
-		safeHighBlockZ,
-		safeHighChunkX,
-		safeHighChunkZ;
-	
-	
-	// all values are provided in chunks
-	public Border(int radiusX, int radiusZ, int centerX, int centerZ)
+	public Border(World world)
 	{
-		this.safeRadiusX = radiusX;
-		this.safeRadiusZ = radiusZ;
-		this.radiusX = radiusX;
-		this.radiusZ = radiusZ;
-		this.centerX = centerX;
-		this.centerZ = centerZ;
-		
-		init();
+		CraftWorld cw = (CraftWorld)world;
+		this.handle = (CraftWorldBorder)cw.getWorldBorder();
+		this.nmsHandle = cw.getHandle().af();
 	}
 	
-	
-	private void init()
+	public boolean isInside2(Location loc)
 	{
-		radiusX += 1; // Have to add at least one safe chunk. The last chunk is bugged as hell
-		radiusZ += 1; // See above
-		radiusX += Config.additionalSafeChunks();
-		radiusZ += Config.additionalSafeChunks();
-		
-		/*
-		 * Settings chunks limit
-		 */
-		lowChunkX  = centerX - radiusX;
-		lowChunkZ  = centerZ - radiusZ;
-		highChunkX = centerX + radiusX;
-		highChunkZ = centerZ + radiusZ;
-		
-		/*
-		 * Settings blocks limit
-		 */
-		int centerBlockX  = centerX << 4;
-		int centerBlockZ  = centerZ << 4;
-		int radiusBlocksX  = radiusX * 16;
-		int radiusBlocksZ  = radiusZ * 16;
-		lowBlockX  = centerBlockX - radiusBlocksX;
-		lowBlockZ  = centerBlockZ - radiusBlocksZ;
-		highBlockX = centerBlockX + radiusBlocksX;
-		highBlockZ = centerBlockZ + radiusBlocksZ;
-		
-		/*
-		 * Adjusting blocks limit due to chunk 0, 0
-		 * Chunks counting starts from 0 for positive and from -1 for negative...
-		 */
-		highBlockX += 15;
-		highBlockZ += 15;
-		
-		/*
-		 * Setting safe chunks
-		 */
-		int safeOffsetChunks = 1; // Have to add at least one safe chunk. The last chunk is bugged as hell
-		safeOffsetChunks += Config.additionalSafeChunks();
-		safeLowChunkX  = lowChunkX  + safeOffsetChunks;
-		safeLowChunkZ  = lowChunkZ  + safeOffsetChunks;
-		safeHighChunkX = highChunkX - safeOffsetChunks;
-		safeHighChunkZ = highChunkZ - safeOffsetChunks;
-		
-		/*
-		 * Setting safe blocks
-		 */
-		int safeOffsetBlocks = safeOffsetChunks * 16;
-		safeLowBlockX  = lowBlockX  + safeOffsetBlocks;
-		safeLowBlockZ  = lowBlockZ  + safeOffsetBlocks;
-		safeHighBlockX = highBlockX - safeOffsetBlocks;
-		safeHighBlockZ = highBlockZ - safeOffsetBlocks;
-		
-		radiusX -= 1; // Remove the safe radius increase applied above
-		radiusZ -= 1; // See above
-		radiusX -= Config.additionalSafeChunks();
-		radiusZ -= Config.additionalSafeChunks();
-		
-		// Just log, debug purpose
-		/**
-		Plugin.instance.log("CALCULATED BORDER:");
-		Plugin.instance.log(radius + " " + centerX + " " + centerZ);
-		Plugin.instance.log(lowChunkX + " " + lowChunkZ + " --- " + highChunkX + " " + highChunkZ);
-		Plugin.instance.log(lowBlockX + " " + lowBlockZ + " --- " + highBlockX + " " + highBlockZ);
-		Plugin.instance.log(safeLowChunkX + " " + safeLowChunkZ + " --- " + safeHighChunkX + " " + safeHighChunkZ);
-		Plugin.instance.log(safeLowBlockX + " " + safeLowBlockZ + " --- " + safeHighBlockX + " " + safeHighBlockZ);
-		/**/
+		return nmsHandle.isInBounds(loc.getBlockX(), loc.getBlockZ());
 	}
 	
-	
-	public boolean isSafe(Block block)
-	{ return isSafe(block.getChunk()); }
-	public boolean isSafe(Chunk chunk)
+	public boolean isInside2(int x, int z)
 	{
-		return chunk.getX() >= safeLowChunkX
-			&& chunk.getZ() >= safeLowChunkZ
-			&& chunk.getX() <= safeHighChunkX
-			&& chunk.getZ() <= safeHighChunkZ;
-			
+		return nmsHandle.isInBounds(x, z);
 	}
 	
-	
-	public boolean isNotSafe(Block block)
-	{ return isNotSafe(block.getChunk()); }
-	public boolean isNotSafe(Chunk chunk)
+	public boolean isOutside(Location loc)
 	{
-		return !isSafe(chunk);
+		return !nmsHandle.isInBounds(loc.getBlockX(), loc.getBlockZ()); 
 	}
 	
-	
-	public boolean isOutsideLimit(Block block) // If we have block then it is inside limit, because chunk is loaded
-	{ return isOutsideLimit(block.getChunk()); }
-	public boolean isOutsideLimit(Chunk chunk)
-	{ return isOutsideLimit(chunk.getX(), chunk.getZ()); }
-	public boolean isOutsideLimit(int chunkX, int chunkZ)
+	public boolean isOutside(int x, int z)
 	{
-		return chunkX > highChunkX
-			|| chunkZ > highChunkZ
-			|| chunkX < lowChunkX
-			|| chunkZ < lowChunkZ;
+		return !nmsHandle.isInBounds(x, z);
 	}
 	
-	
-	public boolean isInsideLimit(Block block)
-	{ return isInsideLimit(block.getChunk()); }
-	public boolean isInsideLimit(Chunk chunk)
-	{ return isInsideLimit(chunk.getX(), chunk.getZ()); }
-	public boolean isInsideLimit(int chunkX, int chunkZ)
+	public int getSize()
 	{
-		return !isOutsideLimit(chunkX, chunkZ);
+		return (int)Math.ceil(handle.getSize());
 	}
 	
-	
-	public boolean isLastBlock(Block block)
+	public int getCenterX()
 	{
-		return block.getX() == lowBlockX
-			|| block.getX() == highBlockX
-			|| block.getZ() == lowBlockZ
-			|| block.getZ() == highBlockZ;
+		return handle.getCenter().getBlockX();
 	}
 	
-	
-	public boolean isLastChunk(Chunk chunk)
+	public int getCenterZ()
 	{
-		return chunk.getX() == lowChunkX
-			|| chunk.getX() == highChunkX
-			|| chunk.getZ() == lowChunkZ
-			|| chunk.getZ() == highChunkZ;
+		return handle.getCenter().getBlockZ();
 	}
 	
-	
-	public boolean equals(Object o)
+	public Location getCenter()
 	{
-		if(o instanceof Border)
-		{
-			Border border = (Border)o;
-			return radiusX == border.radiusX
-				&& radiusZ == border.radiusZ
-				&& centerX == border.centerX
-				&& centerZ == border.centerZ;
-		}
-		return false;
-	}
-	
-	
-	public Location getSafe(Location from)
-	{		
-		int x, z, newX, newZ;
-		x = newX = from.getBlockX();
-		z = newZ = from.getBlockZ();
-		
-		if(x > safeHighBlockX) newX = safeHighBlockX-3;
-		if(z > safeHighBlockZ) newZ = safeHighBlockZ-3;
-		if(x < safeLowBlockX)  newX = safeLowBlockX+3;
-		if(z < safeLowBlockZ)  newZ = safeLowBlockZ+3;	
-		
-		if(x != newX || z != newZ)
-			return from.getWorld().getHighestBlockAt(newX, newZ).getLocation();
-		return null;
+		return handle.getCenter();
 	}
 }

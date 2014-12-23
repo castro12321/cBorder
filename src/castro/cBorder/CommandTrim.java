@@ -73,13 +73,13 @@ public class CommandTrim implements Runnable
 			return;
 		}
 		
-		Border border = BorderMgr.getBorder(nextWorld);
+		Border border = BorderMgr.getNewBorder(nextWorld);
 		Plugin.dispatchCommand(player, "wb shape rectangular");
 		Plugin.dispatchCommand(player, 
 				"wb " + nextWorldName + " set " + 
-				border.radiusX * 16 + " " + border.radiusZ * 16 + " " + 
-				border.centerX * 16 + " " + border.centerZ * 16);
-		Plugin.dispatchCommand(player, "wb " + nextWorldName + " trim 5000 50"); // 5000 freq, 50 padding
+				(int)(border.getSize()/2) + " " + (int)(border.getSize()/2) + " " + 
+				border.getCenterX() + " " + border.getCenterZ());
+		Plugin.dispatchCommand(player, "wb " + nextWorldName + " trim 5000 32"); // 5000 freq, 32 padding
 	}
 	
 	private static File getWorldsDir()
