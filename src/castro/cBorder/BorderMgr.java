@@ -45,6 +45,7 @@ public class BorderMgr
 		
 		WorldBorder wb = getBorderFromWorld(world);
 		
+		/*
 		// Check if we had a border from previous cBorder version
 		OldBorder oldBorder = Config.getOldBorder(worldName);
 		if(oldBorder != null)
@@ -52,10 +53,11 @@ public class BorderMgr
 			setBorderImpl(wb, oldBorder.size, oldBorder.centerX, oldBorder.centerZ);
 			Config.removeWorld(worldName);
 		}
+		*/
 		
 		// Disallow too big worlds 100k blocks is really more than enough
 		if(wb.getSize() > 100000.d)
-			setBorderImpl(wb, 100000, wb.getCenter().getX(), wb.getCenter().getZ());
+			setBorderImpl(world, wb, 320, wb.getCenter().getX(), wb.getCenter().getZ());
 		
 		Border border = new Border(world);
 		borderCache.put(worldName, border);
@@ -74,19 +76,21 @@ public class BorderMgr
 		&& wb.getCenter().getZ() == centerZ)
 			return;
 		
-		setBorderImpl(wb, size, centerX, centerZ);
+		setBorderImpl(world, wb, size, centerX, centerZ);
 		
 		for(Player player : world.getPlayers())
 			refreshChunks(player);
 		
-		Config.removeWorld(world.getName()); // TODO: remove later
+		//Config.removeWorld(world.getName()); // TODO: remove later
 	}
 	
-	private static void setBorderImpl(WorldBorder wb, double size, double centerX, double centerZ)
+	private static void setBorderImpl(World world, WorldBorder wb, double size, double centerX, double centerZ)
 	{
+		Plugin.get().log(world.getName() + "Setting border " + size + "; " + centerX + "; " + centerZ);
 		wb.setSize(size);
 		wb.setCenter(centerX, centerZ);
 		wb.setWarningDistance(0);
+		borderCache.put(world.getName(), new Border(world));
 	}
 	
 	/**

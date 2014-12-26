@@ -170,7 +170,11 @@ public class CommandMgr implements GenericCommandMgr
 			return false;
 		
 		World world	= player.getWorld();
+		if(args.length > 1)
+			world = Bukkit.getWorld(args[1]);
 		Border border = BorderMgr.getNewBorder(world);
+		if(border == null)
+			return false;
 		
 		plugin.sendMessage(sender, "Border info for world " + world.getName());
 		plugin.sendMessage(sender, "center: " + border.getCenterX() + " " + border.getCenterZ());

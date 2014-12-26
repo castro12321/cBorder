@@ -5,25 +5,27 @@
 
 package castro.cBorder;
 
-import org.bukkit.configuration.file.FileConfiguration;
 
 public class Config
 {
 	protected static Plugin plugin;
-	private static FileConfiguration con;
+	//private static FileConfiguration con;
 	
 	public Config()
 	{
 		plugin = Plugin.get();
-		con = plugin.getConfig();
+		//con = plugin.getConfig();
 	}
 	
+	/*
 	public static void removeWorld(String world)
 	{
 		con.set("worlds."+world, null);
 		plugin.saveConfig();
 	}
+	*/
 	
+	/*
 	public static OldBorder getOldBorder(String world)
 	{
 		if(!con.contains("worlds." + world))
@@ -37,4 +39,5 @@ public class Config
 			radiusX = radiusZ = con.getInt("worlds."+world+".radius");
 		return new OldBorder(size, offsetX, offsetZ);
 	}
+	*/
 }
