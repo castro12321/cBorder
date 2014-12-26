@@ -57,7 +57,7 @@ public class BorderMgr
 		
 		// Disallow too big worlds 100k blocks is really more than enough
 		if(wb.getSize() > 100000.d)
-			setBorderImpl(world, wb, 320, wb.getCenter().getX(), wb.getCenter().getZ());
+			setBorderImpl(world, wb, 320, world.getSpawnLocation().getBlockX(), world.getSpawnLocation().getBlockZ());
 		
 		Border border = new Border(world);
 		borderCache.put(worldName, border);

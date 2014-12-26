@@ -179,6 +179,7 @@ public class CommandMgr implements GenericCommandMgr
 		plugin.sendMessage(sender, "Border info for world " + world.getName());
 		plugin.sendMessage(sender, "center: " + border.getCenterX() + " " + border.getCenterZ());
 		plugin.sendMessage(sender, "size: " + border.getSize());
+		plugin.sendMessage(sender, "wspnt: " + world.getSpawnLocation());
 		
 		return true;
 	}

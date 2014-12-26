@@ -41,7 +41,7 @@ public class EntitiesCleaner implements Runnable
 				else
 				{
 					entity.eject();  // In case entity had passengers
-					entity.remove(); // Those entities are a bit laggy so remove them
+					//entity.remove(); // Those entities are a bit laggy so remove them
 				}
 			}
 		}
