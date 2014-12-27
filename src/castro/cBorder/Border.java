@@ -77,6 +77,7 @@ public class Border
 	public Location getCenterHighest()
 	{
 		Location center = getCenter();
+		center.getChunk().load();
 		World world = center.getWorld();
 		return new Location(world, center.getBlockX(), world.getHighestBlockYAt(center), center.getBlockZ());
 	}

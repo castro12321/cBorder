@@ -25,24 +25,24 @@ public class EntitiesCleaner implements Runnable
 	
 	private void cleanWorld(World world)
 	{
-		Border border = BorderMgr.getNewBorder(world);
-		List<Entity> entities = world.getEntities();
-		for(Entity entity : entities)
+		final Border border = BorderMgr.getNewBorder(world);
+		List<Player> entities = world.getPlayers();
+		for(final Player player : entities)
 		{
-			Location loc = entity.getLocation();
+			Location loc = player.getLocation();
 			if(border.isOutside(loc))
 			{
-				if(entity instanceof Player)
-				{
-					Player player = (Player)entity;
-					player.teleport(border.getCenterHighest());
-					plugin.sendMessage(player, "&cYou have passed the border of this world");
-				}
-				else
-				{
-					entity.eject();  // In case entity had passengers
-					//entity.remove(); // Those entities are a bit laggy so remove them
-				}
+				Entity vehicle = player.getVehicle();
+				if(vehicle != null)
+					vehicle.eject();
+				plugin.scheduleSyncDelayedTask(
+					new Runnable() {
+						@Override public void run() {
+							player.teleport(border.getCenterHighest());
+						}
+					}
+				, 100);
+				plugin.sendMessage(player, "&cYou have passed the border of this world");
 			}
 		}
 	}

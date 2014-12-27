@@ -6,7 +6,6 @@
 package castro.cBorder;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -66,10 +65,8 @@ public class CommandMgr implements GenericCommandMgr
 			if(player != null)
 			{
 				world = player.getWorld().getName();
-				
-				Chunk chunk = player.getLocation().getChunk();
-				offsetX = chunk.getX();
-				offsetZ = chunk.getZ();
+				offsetX = player.getLocation().getBlockX();
+				offsetZ = player.getLocation().getBlockZ();
 			}
 			
 			switch(args.length)
