@@ -6,13 +6,10 @@
 package castro.cBorder;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -21,6 +18,8 @@ public class ProtectionListener implements Listener
 {
 	// onLiquidFlow is necessary becuase the water flowing outside the map (on the unloaded chunks) cause lags
 	// Previous version stopped water only on last block of buffer area. This one stops any water outside the border, not only the last block
+	// Disabled it because now cBorder doesn't unload chunks
+	/*
 	@EventHandler
 	public void onLiquidFlow(BlockFromToEvent event)
 	{
@@ -40,10 +39,12 @@ public class ProtectionListener implements Listener
 			to.setType(Material.AIR);
 		}
 	}
+	*/
 	
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event)
 	{
+		// Moze tutaj cos jest?
 		Location to = event.getTo();
 		World toWorld = to.getWorld();
 		Border border = BorderMgr.getNewBorder(toWorld);
