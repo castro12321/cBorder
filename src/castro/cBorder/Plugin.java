@@ -37,7 +37,6 @@ public class Plugin extends CPlugin
 	public void init()
 	{
 		commandMgr = new CommandMgr();
-		new Config();
 		
 		scheduleSyncRepeatingTask(new EntitiesCleaner(), 100, 100);
 		registerEvents(new ProtectionListener());

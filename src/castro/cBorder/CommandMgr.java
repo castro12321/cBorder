@@ -49,8 +49,6 @@ public class CommandMgr implements GenericCommandMgr
 			return selected();
 		if(action.equals("info"))
 			return info();
-		if(action.equals("trimallworlds"))
-			return new CommandTrim(player).runCommand();
 		return false;
 	}
 	
