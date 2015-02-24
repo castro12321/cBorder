@@ -26,7 +26,7 @@ public class ProtectionListener implements Listener
 		{
 			Location highest = border.getCenterHighest();
 			event.setTo(highest);
-			Plugin.get().log("Setting opt to " + highest);
+			Plugin.get().log("Setting opt to " + highest.getWorld().getName() + "; " + highest.getBlockX() + "; " + highest.getBlockZ());
 		}
 	}
 	
